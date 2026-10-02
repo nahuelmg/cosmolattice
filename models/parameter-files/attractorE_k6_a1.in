@@ -1,0 +1,42 @@
+# attractorE benchmark "k6_a1" (arXiv:2510.18656, see notes/inflation_models.tex Table 2)
+# Generated with: python3 notes/attractor_ics.py E --alpha 1 --k 6 --kappa 1 --nstar 57
+# E-model alphaAtt=1.0 k=6 kappa=1.0 N*=57.0
+# slow roll at x_*=6.6612: ns=0.9645 r=0.00366;  x_end=1.4515, H_end=6.2244e+12 GeV
+# Program units: x = phi/MPl, omegaStar = oscillation frequency at the initial amplitude,
+# alpha = 3(k-2)/(k+2). Lattice settings are a starting point and should be tuned.
+
+#Output
+outputfile = ./
+print_headers = true
+overwriteFiles = false
+
+#Evolution
+expansion = true
+evolver = VV2
+
+#Lattice
+N = 64
+dt = 0.02
+kIR = 0.05
+
+#Times
+tOutputFreq = 0.5
+tOutputInfreq = 5
+tOutputRareFreq = 20
+tMax = 200
+
+#IC
+kCutOff = 2
+initial_amplitudes = 3.534520e+18 0 # GeV
+initial_momenta = -2.143446e+31 0 # GeV^2
+
+#Model Parameters
+lambda = 1.555418e-10
+alphaAtt = 1.0
+k = 6
+kappa = 1.0
+g = 0 # inflaton-daughter coupling (1/2) g^2 phi^2 chi^2; 0 = inflaton self-resonance only
+
+#GWs
+withGWs = false
+GWprojectorType = 1

@@ -1,0 +1,316 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,array,graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\lstset{basicstyle=\ttfamily\small,columns=fullflexible,breaklines=true,frame=single,
+        backgroundcolor=\color{gray!8},keepspaces=true}
+
+\DeclareMathOperator{\sech}{sech}
+\newcommand{\MP}{M_P}
+\newcommand{\aatt}{\alpha}
+\newcommand{\at}{\alpha_t}
+\newcommand{\file}[1]{\texttt{#1}}
+
+\title{Implementation report: $\alpha$-attractor inflaton models in \textsc{CosmoLattice}}
+\author{Covers arXiv:2510.18656 (Ellis, Garcia, Olive, Verner)}
+\date{\today}
+
+\begin{document}
+\sloppy
+\maketitle
+
+\begin{abstract}
+This report documents the \textsc{CosmoLattice} implementation of every inflationary model found viable in arXiv:2510.18656: the generalized and deformed $\alpha$-attractor E-models and T-models. It lists the new files, explains how the model headers and the initial-condition helper were built, and justifies every parameter choice in the benchmark parameter files. All families are covered by two model headers, \file{attractorE.h} and \file{attractorT.h}, plus 14 parameter files. The physics background (data constraints, derivative formulas, analytic approximations) is in the companion note \file{notes/inflation\_models.tex}.
+\end{abstract}
+
+\tableofcontents
+
+%======================================================================
+\section{Summary}
+%======================================================================
+\begin{itemize}
+\item \textbf{Two model headers} cover the four viable families. A deformed model with $\kappa=1$ is exactly the corresponding generalized model, and $k=2$, $\aatt=1$, $\kappa=1$ of the E-model is Starobinsky. $\aatt$, $k$, $\kappa$, $\lambda$ and the daughter coupling $g$ are read at run time, so no recompilation is needed to scan them.
+\item \textbf{One Python helper} (\file{notes/attractor\_ics.py}) solves the homogeneous background. Given $(\aatt,k,\kappa,N_*)$ it returns the CMB normalization $\lambda$ and the inflaton amplitude and velocity at the end of inflation.
+\item \textbf{14 benchmark parameter files} reproduce the points quoted in the paper.
+\item Both models compile against \textsc{CosmoLattice}~2.0 and ran without errors in short tests (Sec.~\ref{sec:validation}).
+\end{itemize}
+
+%======================================================================
+\section{New and modified files}
+\label{sec:files}
+%======================================================================
+
+\subsection{New files}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}p{0.47\textwidth}p{0.48\textwidth}@{}}
+\toprule
+File & Content \\
+\midrule
+\file{models/attractorE.h} & Generalized + deformed E-model ($\alpha$-Starobinsky), inflaton + daughter field. \\
+\file{models/attractorT.h} & Generalized + deformed T-model, inflaton + daughter field. \\
+\file{models/parameter-files/attractorE\_*.in} (8 files) & E-model benchmarks (Table~\ref{tab:bench}). \\
+\file{models/parameter-files/attractorT\_*.in} (6 files) & T-model benchmarks (Table~\ref{tab:bench}). \\
+\file{notes/attractor\_ics.py} & Background solver: $\lambda$, $\varphi_i$, $\dot\varphi_i$ from $(\aatt,k,\kappa,N_*)$. \\
+\file{notes/inflation\_models.tex} (+\,PDF) & Physics note: which models, why, potentials, derivatives, benchmark table. \\
+\file{notes/implementation\_report.tex} (+\,PDF) & This report. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Two build directories, \file{build\_attractorE/} and \file{build\_attractorT/}, were also created. They are ignored by git.
+
+\subsection{Modified files}
+No tracked source file of \textsc{CosmoLattice} was modified: the new models are self-contained headers picked up by the existing CMake option \texttt{-DMODEL=<name>}.
+
+Before this work the repository was updated to the latest upstream version (\textsc{CosmoLattice}~2.0, commit \texttt{acc8278d}). Two local changes to tracked files (deletion of \file{src/models/}\allowbreak\file{parameter-files/lphi4.in}, edit of \file{lphi4U1.in}) were reverted to the upstream versions. They are saved in \texttt{git stash} entry ``local changes before pulling v2.0''. Your untracked files (\file{src/models/lphi4\_only.h}, \file{m2phi2.h}, their \file{.in} files, \file{papers/}) were not touched. In v2.0 models live in \file{models/}, not \file{src/models/}.
+
+%======================================================================
+\section{Models implemented}
+\label{sec:models}
+%======================================================================
+With $x\equiv\varphi/\MP$, $b\equiv\sqrt{2/(3\aatt)}$, $c\equiv b/2=1/\sqrt{6\aatt}$ and $V_0=\tfrac34\lambda\MP^4$:
+\begin{align}
+\text{\file{attractorE}:}\quad V &= V_0\,\big[\kappa(1-\cosh bx)+\sinh bx\big]^k, \label{eq:VE}\\
+\text{\file{attractorT}:}\quad V &= V_0\,\Big[\tfrac12\big(1+\kappa+(1-\kappa)\cosh bx\big)\Big]^2\tanh^k(cx). \label{eq:VT}
+\end{align}
+These are the deformed models of the paper (its Sec.~V.B, ``Deformed No-Scale Attractors''). They reduce to
+\begin{itemize}
+\item $\kappa=1$: generalized E-model $V_0(1-e^{-bx})^k$ and generalized T-model $V_0\tanh^k(cx)$ (paper Sec.~V.A);
+\item $\kappa=1$, $k=2$: standard E- and T-models; additionally $\aatt=1$: Starobinsky.
+\end{itemize}
+We checked analytically that the paper's superpotential construction (its Appendix~A) gives the bracket in Eq.~\eqref{eq:VE} raised to the power $k$. Near the minimum both potentials behave as $\varphi^k$ for any $\kappa$.
+
+A second scalar $\chi$ (field index 1) is coupled through $\tfrac12 g^2\varphi^2\chi^2$, as in the existing \file{lphi4.h} and \file{tanh2.h}. The default is $g=0$: then $\chi$ is a free massless spectator and the run studies the inflaton's self-resonance only.
+
+%======================================================================
+\section{How the model headers were built}
+\label{sec:headers}
+%======================================================================
+The headers follow the structure of the existing \file{models/tanh2.h} and \file{models/lphi4.h}: a \texttt{ModelPars} struct (2 scalars, 2 potential terms, \texttt{double}), a constructor that reads parameters and sets the program-variable rescaling, and the functions \texttt{potentialTerms}, \texttt{potDeriv}, \texttt{potDeriv2} for each field.
+
+\subsection{Run-time parameters}
+\begin{center}
+\begin{tabular}{@{}l l l p{0.5\textwidth}@{}}
+\toprule
+Key & Default & Symbol & Meaning \\
+\midrule
+\texttt{lambda}   & required & $\lambda$ & CMB normalization, $V_0=\frac34\lambda\MP^4$ \\
+\texttt{alphaAtt} & 1  & $\aatt$ & attractor parameter. Not called \texttt{alpha}, which \textsc{CosmoLattice} already uses for the time-rescaling exponent \\
+\texttt{k}        & 2  & $k$ & power at the minimum; must be an even integer $\ge2$ (checked, else the run stops with \texttt{RunParametersInconsistent}) \\
+\texttt{kappa}    & 1  & $\kappa$ & plateau deformation \\
+\texttt{g}        & 0  & $g$ & inflaton--daughter coupling \\
+\texttt{initial\_amplitudes} & required & $\varphi_i,\chi_i$ & GeV \\
+\texttt{initial\_momenta} & 0 0 & $\dot\varphi_i,\dot\chi_i$ & GeV$^2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Since $k$ is a run-time number, powers are written as \texttt{pow(expr, k)} on field expressions. TempLat supports this, and an integer-valued floating exponent is well defined for negative bases, which occur for $x<0$.
+
+\subsection{Program variables}
+\textsc{CosmoLattice} evolves $\tilde\varphi=\varphi/f_*$ in the time variable $d\tilde\eta=a^{-\at}\omega_*\,dt$. The program potential is $\tilde V=V/(f_*^2\omega_*^2)$. We chose:
+\begin{equation}
+f_*=\MP,\qquad
+\omega_*=\sqrt{\lambda_k}\,\MP\,x_i^{(k-2)/2},\qquad
+\at=\frac{3(k-2)}{k+2},
+\end{equation}
+where $x_i=|\varphi_i|/\MP$ and $\lambda_k$ is defined by the small-field limit $V\simeq(\lambda_k/k)\MP^{4-k}\varphi^k$:
+\begin{equation}
+\lambda_k^{(E)}=k\,\tfrac34\lambda\,b^k,\qquad \lambda_k^{(T)}=k\,\tfrac34\lambda\,c^k .
+\end{equation}
+
+\paragraph{Why these choices.}
+\begin{itemize}
+\item $f_*=\MP$: the program field is $x=\varphi/\MP$, so the potential is written directly in terms of the functions of Sec.~\ref{sec:models}, with $b$, $c$ unchanged. The plateau and the minimum are both $\mathcal O(1)$ in these units.
+\item $\omega_*$ is the oscillation frequency of a condensate of amplitude $\varphi_i$ in the $\varphi^k$ potential. For $k=2$ it is the inflaton mass: $\omega_*=m_\varphi=\sqrt{\lambda/\aatt}\,\MP$ (E), $\tfrac12\sqrt{\lambda/\aatt}\,\MP$ (T). For $k=4$ it reduces to the \file{lphi4.h} choice $\omega_*=\sqrt{\lambda_4}\,\varphi_i$. One oscillation therefore takes $\Delta\tilde\eta\sim2\pi$ at the start.
+\item $\at$: in a $\varphi^k$ potential the amplitude decays as $a^{-6/(k+2)}$, so the oscillation frequency decays as $a^{-3(k-2)/(k+2)}$. With $\at=3(k-2)/(k+2)$ the frequency stays constant in program time. This gives $\at=0$ for $k=2$ (as in \file{tanh2.h}) and $\at=1$ for $k=4$ (as in \file{lphi4.h}); $\at=3/2$ for $k=6$, $\at=2$ for $k=10$.
+\end{itemize}
+
+With these choices, the code computes two constants once in the constructor:
+\begin{equation}
+\texttt{pref}=\tfrac34\lambda\,\frac{\MP^2}{\omega_*^2},\qquad
+\texttt{qInt}=\frac{g^2\MP^2}{\omega_*^2},
+\end{equation}
+so that $\tilde V = \texttt{pref}\cdot F(x) + \tfrac12\,\texttt{qInt}\,x^2\tilde\chi^2$, with $F=V/V_0$ the bracket expressions of Eqs.~\eqref{eq:VE}--\eqref{eq:VT}.
+
+\subsection{Numerically safe forms}
+Near the minimum $\kappa(1-\cosh bx)$ and $(1-\kappa)(\cosh bx-1)$ suffer from cancellation. The code uses the identity $\cosh y-1=2\sinh^2(y/2)$:
+\begin{align}
+G &\equiv \kappa(1-\cosh bx)+\sinh bx = \sinh bx-2\kappa\sinh^2(bx/2), \\
+D &\equiv \tfrac12\big(1+\kappa+(1-\kappa)\cosh bx\big) = 1+(1-\kappa)\sinh^2(bx/2).
+\end{align}
+The derivatives implemented are
+\begin{align}
+\text{E:}\quad F' &= kG^{k-1}G', & F'' &= k\big[(k-1)G^{k-2}G'^2+G^{k-1}G''\big],\\
+& G'=b(\cosh bx-\kappa\sinh bx), & G''&=b^2(\sinh bx-\kappa\cosh bx),\\
+\text{T:}\quad F' &= 2DD'T+D^2T', & F''&=2(D'^2+DD'')T+4DD'T'+D^2T'',
+\end{align}
+with $D'=\tfrac12(1-\kappa)b\sinh bx$, $D''=\tfrac12(1-\kappa)b^2\cosh bx$, $T=\tanh^k(cx)$, $T'=kc\tanh^{k-1}(cx)\sech^2(cx)$, $T''=kc^2\tanh^{k-2}(cx)\sech^2(cx)\big[(k-1)\sech^2(cx)-2\tanh^2(cx)\big]$. All of them were checked against finite differences of the potential. The second derivatives set the initial effective masses through \texttt{setInitialPotentialAndMassesFromPotential()}.
+
+%======================================================================
+\section{The initial-condition helper}
+\label{sec:helper}
+%======================================================================
+\file{notes/attractor\_ics.py} needs \texttt{numpy} and \texttt{scipy}. These are available in the \texttt{cosmolattice} conda environment.
+
+\paragraph{Usage.}
+\begin{lstlisting}
+~/miniconda3/envs/cosmolattice/bin/python3 notes/attractor_ics.py E --alpha 1 --k 2 --kappa 1 --nstar 50
+\end{lstlisting}
+It prints \texttt{lambda}, \texttt{alphaAtt}, \texttt{k}, \texttt{kappa}, \texttt{initial\_amplitudes} and \texttt{initial\_momenta} in the \file{.in} syntax, plus a comment line with the slow-roll $n_s$, $r$, $x_*$, $x_{\rm end}$ and $H_{\rm end}$.
+
+\paragraph{Method.}
+\begin{enumerate}
+\item The background equation is integrated in $e$-folds $N$, where the trajectory $x(N)$ does not depend on $\lambda$:
+\begin{equation}
+x''=-(3-\varepsilon_H)\Big(x'+\frac{F'(x)}{F(x)}\Big),\qquad \varepsilon_H=\tfrac12x'^2 .
+\end{equation}
+It starts on the slow-roll attractor, $x'=-F'/F$, at a field value $x_0$ increased until the slow-roll estimate gives at least $N_*+15$ $e$-folds.
+\item The end of inflation is the event $\varepsilon_H=1$. This gives $x_{\rm end}$ and $x'_{\rm end}$.
+\item $x_*$ is the value $N_*$ $e$-folds before the end, read from the dense ODE solution.
+\item $\lambda$ is fixed from $A_s=V_*/(24\pi^2\varepsilon_{V*}\MP^4)$ with $A_s=2.1\times10^{-9}$, i.e.\ $\lambda=32\pi^2A_s\,\varepsilon_{V*}/F(x_*)$.
+\item The initial conditions are set at the end of inflation:
+\begin{equation}
+\varphi_i=x_{\rm end}\MP,\qquad
+\dot\varphi_i=\MP H_{\rm end}\,x'_{\rm end},\qquad
+H_{\rm end}^2=\frac{V(x_{\rm end})}{\MP^2(3-\varepsilon_H)} .
+\end{equation}
+\end{enumerate}
+The ODE uses \texttt{rtol}~$=10^{-10}$. The quoted $n_s$, $r$ are slow-roll estimates, accurate to $\sim10^{-3}$ in $n_s$; the paper's values come from solving the Mukhanov--Sasaki equation.
+
+\paragraph{Check against the paper.} For Starobinsky with $N_*=55$ the helper gives $\lambda=1.57\times10^{-10}$ (paper: $1.6\times10^{-10}$), $x_*=5.32$ (paper: $5.35$), $x_{\rm end}=0.615$ (paper's analytic estimate: $0.63$), $n_s=0.964$, $r=0.0037$ (paper, exact: $0.9649$, $0.00355$).
+
+%======================================================================
+\section{Choice of the parameters}
+\label{sec:params}
+%======================================================================
+
+\subsection{Model parameters $(\aatt,k,\kappa)$}
+The benchmarks are the parameter points for which the paper quotes predictions or which it identifies as best fits (its Results section, collected in Table~2 of \file{inflation\_models.tex}):
+\begin{itemize}
+\item reference points: Starobinsky ($k=2$, $\aatt=1$) and the $k=2$ T-model;
+\item steeper minima, which raise $N_*$ and $n_s$ through a stiffer reheating equation of state $w=(k-2)/(k+2)$: $k=4,6$ (E), $k=6,10$ (T) at $\aatt=1$, and $\aatt=5$ for E with $k=6,10$, where the paper finds overlap with the ACT region;
+\item deformed plateaus: $\kappa=0.9999$ for $k=2$, $\kappa=0.99999$ for $k=4,6$ (see below), and the deformed E-model $k=6$, $\aatt=4$ point.
+\end{itemize}
+
+\paragraph{The value of $\kappa$ for $k=4,6$.}
+The paper's text says $\kappa=0.9999$ for every deformed benchmark. With that value the $k=4,6$ points give a blue tilt ($n_s=0.99$--$1.04$), far from the quoted $n_s\simeq0.966$--$0.970$. With $\kappa=0.99999$ the helper reproduces them: E $k=4$: $n_s=0.969$, $r=0.0044$ (paper $0.970$, $0.004$); T $k=4$: $n_s=0.966$, $r=0.0042$ (paper $0.966$, $0.004$); T $k=6$: $n_s=0.968$ (paper $0.969$). The corresponding figure file in the arXiv source is also named \file{fulltplots\_kappa0p99999.pdf}, so we used $\kappa=0.99999$ for these three files. The deformed E $k=6$, $\aatt=4$ point does match $\kappa=0.9999$ ($n_s=0.973$, $r=0.017$; paper $0.974$, $0.016$), so it keeps that value. The paper's $r\simeq0.012$ for deformed T $k=6$ is not reproduced for either $\kappa$ (we get $0.004$).
+
+\subsection{Number of $e$-folds $N_*$}
+$N_*$ is an input of the helper and fixes $\lambda$ and the slow-roll observables. It does not change the lattice initial conditions much: $x_{\rm end}$ does not depend on $N_*$, while $\lambda$ and $\dot\varphi_i$ change at the 10\% level. Values were taken from the paper for its conservative reheating window $10^2\,\text{GeV}\lesssim T_{\rm RH}\lesssim10^{10}$\,GeV:
+\begin{itemize}
+\item $k=2$: $N_*=50$, the value the paper uses for reference; it corresponds to $T_{\rm RH}\simeq5\times10^7$\,GeV for Starobinsky. From the paper's App.~B formula $N_*\simeq59.55-\tfrac13\ln N_*+\tfrac13\ln(T_{\rm RH}/\MP)$, $N_*\simeq45.7$--$51.8$ across the window.
+\item $k=4$: $N_*=55.7$ (E), $55.8$ (T). For $w=1/3$, $N_*$ does not depend on $T_{\rm RH}$ (paper, App.~B).
+\item $k=6$: $N_*=57$--$58$, the range quoted by the paper.
+\item $k=10$: $N_*=60$, middle of the paper's $59$--$61.5$.
+\end{itemize}
+For $k\ge6$ the true $N_*$ depends on the inflaton fragmentation temperature, which is exactly what the lattice runs can measure. These values should be revisited once that is known.
+
+\subsection{Lattice and run settings}
+All 14 files share the same settings, which are untuned starting points:
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}l l p{0.62\textwidth}@{}}
+\toprule
+Key & Value & Reason \\
+\midrule
+\texttt{expansion} & true & self-consistent FRW expansion; needed for reheating \\
+\texttt{evolver} & VV2 & second-order velocity Verlet, as in \file{tanh2.in} \\
+\texttt{N} & 64 & modest grid for exploration; 32 was used for the tests \\
+\texttt{kIR} & 0.05 & $H_{\rm end}/\omega_*\simeq0.24$ for Starobinsky (the measured initial Friedmann value in program units, $0.058\simeq0.24^2$), so the box contains modes from above to well below the horizon scale \\
+\texttt{dt} & 0.02 & $\sim300$ steps per initial oscillation period ($2\pi$); much smaller than the lattice spacing $\delta x=2\pi/(N\,k_{\rm IR})\simeq2$ \\
+\texttt{kCutOff} & 2 & initial vacuum fluctuations only below $\tilde k=2$, inside the lattice range ($\tilde k_{\max}\simeq\sqrt3\,N k_{\rm IR}/2\simeq2.8$) \\
+\texttt{tMax} & 200 & $\sim30$ oscillations; extend for fragmentation studies \\
+\texttt{tOutput*} & 0.5 / 5 / 20 & frequent / infrequent / rare measurements \\
+\texttt{g} & 0 & self-resonance only; set $g>0$ to study preheating into $\chi$ \\
+\texttt{withGWs} & false & off for the first runs \\
+\bottomrule
+\end{tabular}
+\end{center}
+Before production runs, check resolution by varying \texttt{N}, \texttt{kIR} and \texttt{dt}, and watch the Friedmann-constraint output.
+
+\subsection{Benchmark files}
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.15}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}l c c c c c c c c@{}}
+\toprule
+File (\file{attractor...in}) & $\aatt$ & $k$ & $\kappa$ & $N_*$ & $\lambda$ & $\varphi_i$ [GeV] & $\dot\varphi_i$ [GeV$^2$] & $(n_s,\ r)$ slow roll \\
+\midrule
+\file{E\_k2\_a1\_starobinsky}  & 1 & 2  & 1       & 50   & $1.89\times10^{-10}$ & $1.50\times10^{18}$ & $-2.79\times10^{31}$ & $0.9604,\ 0.0044$ \\
+\file{E\_k4\_a1}               & 1 & 4  & 1       & 55.7 & $1.60\times10^{-10}$ & $2.68\times10^{18}$ & $-2.29\times10^{31}$ & $0.9639,\ 0.0038$ \\
+\file{E\_k6\_a1}               & 1 & 6  & 1       & 57   & $1.56\times10^{-10}$ & $3.53\times10^{18}$ & $-2.14\times10^{31}$ & $0.9645,\ 0.0037$ \\
+\file{E\_k6\_a5}               & 5 & 6  & 1       & 58   & $7.23\times10^{-10}$ & $5.16\times10^{18}$ & $-2.16\times10^{31}$ & $0.9653,\ 0.0155$ \\
+\file{E\_k10\_a5}              & 5 & 10 & 1       & 60   & $7.09\times10^{-10}$ & $7.37\times10^{18}$ & $-1.83\times10^{31}$ & $0.9660,\ 0.0152$ \\
+\file{E\_k2\_a1\_kappa0p9999}  & 1 & 2  & 0.9999  & 50   & $2.61\times10^{-10}$ & $1.50\times10^{18}$ & $-3.28\times10^{31}$ & $0.9737,\ 0.0062$ \\
+\file{E\_k4\_a1\_kappa0p99999} & 1 & 4  & 0.99999 & 55.7 & $1.86\times10^{-10}$ & $2.68\times10^{18}$ & $-2.46\times10^{31}$ & $0.9694,\ 0.0044$ \\
+\file{E\_k6\_a4\_kappa0p9999}  & 4 & 6  & 0.9999  & 57   & $7.54\times10^{-10}$ & $4.93\times10^{18}$ & $-2.51\times10^{31}$ & $0.9729,\ 0.0169$ \\
+\midrule
+\file{T\_k2\_a1}               & 1 & 2  & 1       & 50   & $2.08\times10^{-10}$ & $2.04\times10^{18}$ & $-2.44\times10^{31}$ & $0.9591,\ 0.0049$ \\
+\file{T\_k6\_a1}               & 1 & 6  & 1       & 58   & $1.55\times10^{-10}$ & $4.83\times10^{18}$ & $-1.92\times10^{31}$ & $0.9646,\ 0.0037$ \\
+\file{T\_k10\_a1}              & 1 & 10 & 1       & 60   & $1.45\times10^{-10}$ & $6.30\times10^{18}$ & $-1.84\times10^{31}$ & $0.9658,\ 0.0034$ \\
+\file{T\_k2\_a1\_kappa0p9999}  & 1 & 2  & 0.9999  & 50   & $2.78\times10^{-10}$ & $2.04\times10^{18}$ & $-2.82\times10^{31}$ & $0.9714,\ 0.0066$ \\
+\file{T\_k4\_a1\_kappa0p99999} & 1 & 4  & 0.99999 & 55.8 & $1.80\times10^{-10}$ & $3.71\times10^{18}$ & $-2.11\times10^{31}$ & $0.9659,\ 0.0042$ \\
+\file{T\_k6\_a1\_kappa0p99999} & 1 & 6  & 0.99999 & 57   & $1.80\times10^{-10}$ & $4.83\times10^{18}$ & $-2.07\times10^{31}$ & $0.9681,\ 0.0042$ \\
+\bottomrule
+\end{tabular}}
+\caption{The 14 benchmark parameter files. All numbers come from \file{notes/attractor\_ics.py}; the generating command is recorded in the header of each file.}
+\label{tab:bench}
+\end{table}
+
+%======================================================================
+\section{Validation}
+\label{sec:validation}
+%======================================================================
+\begin{enumerate}
+\item \textbf{Derivatives}: $F'$ and $F''$ of all four families were compared with finite differences at a generic point ($k=6$, $\kappa=0.93$); agreement to $\sim10^{-8}$.
+\item \textbf{Compilation}: both headers build against \textsc{CosmoLattice}~2.0 (TempLat v1.0.2) with the \texttt{cosmolattice} conda environment (cmake 4.2.3, FFTW3).
+\item \textbf{Short runs} ($N=32$, $\tilde t\le20$):
+\begin{center}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}l c c l@{}}
+\toprule
+Parameter file & NaN & Friedmann rel.\ error at $\tilde t=19.5$ & Behaviour \\
+\midrule
+\file{attractorE\_k2\_a1\_starobinsky} & none & $2.3\times10^{-4}$ & damped oscillation around $x=0$ \\
+\file{attractorT\_k2\_a1}              & none & $3.8\times10^{-4}$ & damped oscillation \\
+\file{attractorE\_k6\_a1}              & none & $4.8\times10^{-6}$ & anharmonic, asymmetric oscillation \\
+\file{attractorE\_k6\_a4\_kappa0p9999} & none & $1.1\times10^{-5}$ & anharmonic oscillation \\
+\file{attractorT\_k6\_a1\_kappa0p99999}& none & $2.6\times10^{-5}$ & anharmonic, symmetric oscillation \\
+\bottomrule
+\end{tabular}}
+\end{center}
+The initial program momentum of the Starobinsky run, $\tilde\pi=-0.342$, agrees with the hand conversion $\dot\varphi_i/(f_*\omega_*)$.
+\end{enumerate}
+\textbf{Not yet done}: comparison of \file{attractorT} ($k=2$, $\kappa=1$) with the existing \file{tanh2} model (mapping $M=\sqrt{6\aatt}\,\MP$, $\Lambda^4=\tfrac32\lambda\MP^4$); resolution studies; long runs.
+
+%======================================================================
+\section{How to build and run}
+%======================================================================
+\begin{lstlisting}
+export PATH=~/miniconda3/envs/cosmolattice/bin:$PATH   # provides cmake and FFTW
+cd ~/cosmolattice
+mkdir build_attractorE && cd build_attractorE
+cmake .. -DMODEL=attractorE && make -j8
+./attractorE input=../models/parameter-files/attractorE_k2_a1_starobinsky.in
+# any key can be overridden on the command line, e.g. N=128 tMax=500 g=1e-4
+\end{lstlisting}
+For the T-model replace \texttt{attractorE} with \texttt{attractorT}. To make a new benchmark, run the helper with the desired $(\aatt,k,\kappa,N_*)$ and copy its output into a copy of one of the existing \file{.in} files.
+
+%======================================================================
+\section{Open points}
+%======================================================================
+\begin{itemize}
+\item Fix $N_*$ self-consistently: for $k\ge6$ measure the fragmentation time and temperature on the lattice and feed them back into the paper's App.~B expression for $N_*$, which depends on $\max[T_{\rm RH},T_{\rm frag}]$.
+\item Choose the daughter coupling $g$ (and possibly trilinear or fermionic decay channels) for the reheating study.
+\item For $k\ge6$, after fragmentation the equation of state tends to $w=1/3$; consider $\at=1$ for long runs.
+\item Tune lattice settings (Sec.~\ref{sec:params}) with resolution tests.
+\end{itemize}
+
+\end{document}

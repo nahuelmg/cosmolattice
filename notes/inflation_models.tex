@@ -1,0 +1,325 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{booktabs,multirow,array,graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\DeclareMathOperator{\sech}{sech}
+\newcommand{\MP}{M_P}
+\newcommand{\trh}{T_{\rm RH}}
+\newcommand{\aatt}{\alpha}
+\newcommand{\at}{\alpha_t}
+\newcommand{\todo}[1]{{\color{BrickRed}\textbf{[#1]}}}
+
+\title{Inflationary potentials to implement in \textsc{CosmoLattice}\\[2pt]
+\large in light of \textit{Planck}~2018, BICEP/Keck~2018, ACT~DR6 and SPT-3G}
+\author{Working notes based on J.~Ellis, M.~A.~G.~Garcia, K.~A.~Olive, S.~Verner,\\
+\textit{Constraints on Attractor Models of Inflation and Reheating}\\
+\textit{from Planck, BICEP/Keck, ACT DR6, and SPT-3G Data},
+\href{https://arxiv.org/abs/2510.18656}{arXiv:2510.18656}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We list the single-field inflaton potentials that remain viable after the latest CMB data and that should be implemented as \textsc{CosmoLattice} models for lattice studies of (p)reheating. For each family we give the potential, its first and second field derivatives (needed for \texttt{potentialTerms}, \texttt{potDeriv}, \texttt{potDeriv2}), the CMB normalization, the end-of-inflation field value, the parameter ranges allowed by the data, and a suggested choice of program variables $(f_*,\omega_*,\at)$. All derivative expressions have been checked numerically.
+\end{abstract}
+
+\tableofcontents
+
+%======================================================================
+\section{Observational targets}
+\label{sec:data}
+%======================================================================
+
+The three $n_s$ determinations used to discriminate between models are (68\% CL, pivot $k_*=0.05\,{\rm Mpc}^{-1}$):
+\begin{align}
+\textit{Planck}~2018\ (+\text{lensing}): &\quad n_s = 0.9649\pm 0.0042, \label{eq:nsPlanck}\\
+\text{CMB-SPA (SPT-3G + \textit{Planck} + ACT)}: &\quad n_s = 0.9684\pm 0.0030, \label{eq:nsSPA}\\
+\text{P-ACT-LB2 (\textit{Planck} + ACT + lensing + DESI DR2)}: &\quad n_s = 0.9752\pm 0.0030, \label{eq:nsACT}
+\end{align}
+together with the tensor bound (95\% CL)
+\begin{equation}
+r_{0.05} < 0.036 \quad (\text{\textit{Planck}+BK18}), \qquad r < 0.038 \quad (\text{\textit{Planck}+ACT+BK18}),
+\end{equation}
+and the scalar amplitude $A_s \simeq 2.10\times 10^{-9}$. The P-ACT-LB2 value sits $\sim 2\sigma$ above \textit{Planck}; CMB-SPA is in between. A model is therefore ``safe'' if it reaches $n_s\gtrsim 0.968$ with $r\lesssim 0.036$ for a physically reasonable reheating history, and ``ACT-preferred'' if it reaches $n_s\simeq 0.972$--$0.978$.
+
+Reheating sets the number of $e$-folds $N_*$; the paper scans $4\,{\rm MeV}\le \trh \le 2\times 10^{15}$~GeV, with the ``conservative'' window $100\,{\rm GeV}\lesssim \trh \lesssim 10^{10}$~GeV (leptogenesis/sphalerons below, gravitino bound above).
+
+\paragraph{Consequences for model selection.}
+\begin{itemize}
+\item Chaotic monomials $V\propto\varphi^2,\varphi^4$ are excluded by $r$ (already at $>3\sigma$ for $\varphi^4$ with \textit{Planck}+BK15). They should only be kept as toy preheating models (\texttt{lphi4}, \texttt{m2phi2}), not as realistic inflationary models.
+\item The canonical Starobinsky/T-model ($\aatt=1$, $k=2$) are fine for \textit{Planck} but sit below the CMB-SPA 95\% region and well below P-ACT-LB2.
+\item Plateau models with a \emph{steeper minimum} ($V\propto\varphi^k$, $k\ge 6$) or a \emph{slightly deformed plateau} ($\kappa\simeq 0.9999$) raise $n_s$ into the ACT/SPA range. These are the main new targets, and their reheating stage (anharmonic oscillations, fragmentation) is exactly what a lattice code is needed for.
+\end{itemize}
+
+%======================================================================
+\section{Conventions}
+\label{sec:conv}
+%======================================================================
+
+We use $x\equiv\varphi/\MP$, $\MP = 2.435\times 10^{18}$~GeV, and
+\begin{equation}
+V_0 \equiv \frac34\lambda\MP^4, \qquad
+\beta \equiv \sqrt{\frac{2}{3\aatt}}, \qquad
+\gamma \equiv \frac{1}{\sqrt{6\aatt}} = \frac{\beta}{2}.
+\end{equation}
+Here $\aatt$ is the attractor parameter (curvature of the no-scale K\"ahler manifold, $R_K = 2/3\aatt$); $k\ge 2$ is an even integer setting $V\propto\varphi^k$ near the minimum; $\kappa$ is the deformation parameter ($\kappa=1$: undeformed). Primes denote $d/dx$, so $\partial_\varphi V = V'/\MP$ and $\partial^2_\varphi V = V''/\MP^2$.
+
+\paragraph{Name clash.} \textsc{CosmoLattice} already uses the member \texttt{alpha} for the time-rescaling exponent ($d\tilde\eta = a^{-\at}\omega_* dt$). In the code the attractor parameter must be named differently, e.g.\ \texttt{alphaAtt}. In these notes the time-rescaling exponent is denoted $\at$.
+
+\paragraph{CMB normalization.} To good approximation, for all families below with $\kappa=1$,
+\begin{equation}
+\lambda \simeq \frac{24\,\aatt\,\pi^2 A_s}{N_*^2}
+\qquad\Rightarrow\qquad
+\lambda \simeq 1.64\times 10^{-10}\,\aatt\left(\frac{55}{N_*}\right)^2 ,
+\label{eq:lambda}
+\end{equation}
+independent of $k$. For deformed models ($\kappa\neq 1$) and for precision work, $\lambda$ should be fixed numerically from $A_s = V_*/(24\pi^2\varepsilon_{V*}\MP^4)$ or, better, by solving the Mukhanov--Sasaki equation.
+
+\paragraph{Slow-roll and end of inflation.}
+$\varepsilon_V = \tfrac12 (V'/V)^2$, $\eta_V = V''/V$, $n_s\simeq 1-6\varepsilon_{V*}+2\eta_{V*}$, $r\simeq 16\varepsilon_{V*}$. Inflation ends at $\varepsilon_H=1$, i.e.\ $\varepsilon_V\simeq(1+\sqrt{1-\eta_V/2})^2$. In the large-$N_*$ limit all undeformed attractors give
+\begin{equation}
+n_s\simeq 1-\frac{2}{N_*}, \qquad r\simeq \frac{12\aatt}{N_*^2}.
+\end{equation}
+
+%======================================================================
+\section{Models to implement}
+\label{sec:models}
+%======================================================================
+
+Table~\ref{tab:summary} summarizes the proposed model files. Models are grouped so that each family can be one \textsc{CosmoLattice} header with $(\aatt,k,\kappa,\lambda)$ read from the parameter file; the separate entries are the benchmark points worth running.
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.25}
+\small
+\begin{tabular}{@{}l l l l l@{}}
+\toprule
+Priority & Proposed file & Potential & Parameters & Status w.r.t.\ data \\
+\midrule
+1 & \texttt{attractorE.h} ($\kappa=1$)   & gen.\ E-model, Eq.~\eqref{eq:VE}   & $\aatt,k,\lambda$ & $k\ge 6$: improved $n_s$; $\aatt\lesssim 16$ \\
+1 & \texttt{attractorT.h} ($\kappa=1$)   & gen.\ T-model, Eq.~\eqref{eq:VT}   & $\aatt,k,\lambda$ & $k=10,\ \aatt\simeq 1$ enters ACT 95\% \\
+1 & \texttt{attractorE.h}                & deformed E, Eq.~\eqref{eq:VdE}     & $\aatt,k,\kappa,\lambda$ & $\kappa\simeq1-10^{-4}$: fits P-ACT-LB \\
+1 & \texttt{attractorT.h}                & deformed T, Eq.~\eqref{eq:VdT}     & $\aatt,k,\kappa,\lambda$ & $\kappa\simeq1-10^{-4}$: fits all three sets \\
+2 & \texttt{attractorE.h} ($k=2,\kappa=1$) & E-model / Starobinsky             & $\aatt,\lambda$ & \textit{Planck} OK; $\aatt\lesssim 25$ \\
+2 & \texttt{attractorT.h} ($k=2,\kappa=1$) & T-model                           & $\aatt,\lambda$ & \textit{Planck} OK; $\aatt\lesssim 11$ \\
+\bottomrule
+\end{tabular}
+\caption{Implementation list. Since the deformed models reduce to the generalized ones at $\kappa=1$, two headers cover all families: \texttt{models/attractorE.h} and \texttt{models/attractorT.h}, with $(\aatt,k,\kappa,\lambda,g)$ read at run time. The $k=2$ undeformed cases are obtained by setting $k=2$, $\kappa=1$; the existing \texttt{tanh2.h} already covers the $k=2$ T-model in a different parametrization (Sec.~\ref{sec:existing}).}
+\label{tab:summary}
+\end{table}
+
+%----------------------------------------------------------------------
+\subsection{Model 1: generalized E-model ($\alpha$-Starobinsky)}
+\label{sec:E}
+%----------------------------------------------------------------------
+\begin{equation}
+V(\varphi) = V_0\left(1-e^{-\beta x}\right)^{k}.
+\label{eq:VE}
+\end{equation}
+For $\aatt=1$, $k=2$ this is the Starobinsky model (Einstein frame of $R+R^2/6M^2$, with $\lambda = M^2/\MP^2$). With $u\equiv 1-e^{-\beta x}$:
+\begin{align}
+V' &= V_0\,k\beta\,e^{-\beta x}\,u^{k-1}, \\
+V'' &= V_0\,k\beta^2\,e^{-\beta x}\,u^{k-2}\left(k\,e^{-\beta x}-1\right).
+\end{align}
+\emph{Small field:} $V\simeq V_0\beta^k x^k$; for $k=2$, $m_\varphi^2 = \lambda\MP^2/\aatt$. Note the potential is asymmetric: for $x<0$ it grows exponentially, so oscillations are not symmetric about the minimum.
+
+\emph{End of inflation} (slow-roll estimate, accurate to a few \%):
+\begin{equation}
+x_{\rm end}\simeq\sqrt{\frac{3\aatt}{2}}\ln\!\left[\frac{2\left(6\aatt+\sqrt{3\aatt(2k-1)^2}-k\right)}{12\aatt-1}\right],
+\label{eq:xendE}
+\end{equation}
+giving $x_{\rm end}\simeq 0.63,\,1.16,\,1.52$ for $\aatt=1$ and $k=2,4,6$.
+
+\emph{Horizon exit:}
+\begin{equation}
+x_*\simeq\sqrt{\frac{3\aatt}{2}}\left[1+\frac{3\aatt}{2kN_*-3\aatt}\right]
+\ln\!\left(\frac{2kN_*}{3\aatt}+e^{\sqrt{2/3}\,x_{\rm end}}-\sqrt{\tfrac23}\,x_{\rm end}\right).
+\end{equation}
+
+\emph{Observables} (large $N_*$):
+\begin{equation}
+n_s\simeq 1-\frac{2}{N_*}-\frac{3\aatt\left(2+k-2\ln\frac{2kN_*}{3\aatt}\right)}{2kN_*^2},\qquad
+r\simeq\frac{12\aatt}{N_*^2}-\frac{36\aatt^2\ln\frac{2kN_*}{3\aatt}}{kN_*^3}.
+\end{equation}
+
+%----------------------------------------------------------------------
+\subsection{Model 2: generalized T-model}
+\label{sec:T}
+%----------------------------------------------------------------------
+\begin{equation}
+V(\varphi) = V_0\tanh^{k}\!\left(\gamma x\right).
+\label{eq:VT}
+\end{equation}
+With $t\equiv\tanh(\gamma x)$, $s^2\equiv\sech^2(\gamma x)$:
+\begin{align}
+V' &= V_0\,k\gamma\,t^{k-1}s^2, \\
+V'' &= V_0\,k\gamma^2\,t^{k-2}s^2\left[(k-1)s^2-2t^2\right].
+\end{align}
+\emph{Small field:} $V\simeq V_0\gamma^k x^k$; for $k=2$, $m_\varphi^2 = \lambda\MP^2/(4\aatt)$. The potential is symmetric.
+
+\emph{End of inflation:}
+\begin{equation}
+x_{\rm end}\simeq\sqrt{\frac{3\aatt}{2}}\ln\!\left[\frac{2k(1-2\sqrt{3\aatt})}{1-12\aatt}
++\sqrt{\frac{(1+12\aatt-4\sqrt{3\aatt})(12\aatt+4k^2-1)}{(12\aatt-1)^2}}\right],
+\end{equation}
+($x_{\rm end}\simeq 0.89$ for $\aatt=1$, $k=2$). \emph{Horizon exit:}
+\begin{equation}
+x_*\simeq\sqrt{\frac{3\aatt}{2}}\cosh^{-1}\!\left[\frac{2kN_*}{3\aatt}+\cosh\!\left(\beta\,x_{\rm end}\right)\right].
+\end{equation}
+\emph{Observables:}
+\begin{equation}
+n_s\simeq 1-\frac{2}{N_*}-\frac{3(k-2)\aatt}{2kN_*^2},\qquad
+r\simeq\frac{12\aatt}{N_*^2}-\frac{36\aatt^2}{kN_*^3}.
+\end{equation}
+
+%----------------------------------------------------------------------
+\subsection{Model 3: deformed E-model}
+\label{sec:dE}
+%----------------------------------------------------------------------
+\begin{equation}
+V(\varphi) = V_0\left[\kappa-\kappa\cosh(\beta x)+\sinh(\beta x)\right]^{k}.
+\label{eq:VdE}
+\end{equation}
+For $\kappa=1$ the bracket equals $1-e^{-\beta x}$ and Eq.~\eqref{eq:VE} is recovered. For $\kappa<1$ the plateau is lifted ($V$ grows like $[(1-\kappa)/2]^k e^{k\beta x}$ at large $x$), which increases $n_s$ and $r$. With
+\begin{equation}
+G\equiv\kappa(1-\cosh\beta x)+\sinh\beta x,\quad
+G'=\beta(\cosh\beta x-\kappa\sinh\beta x),\quad
+G''=\beta^2(\sinh\beta x-\kappa\cosh\beta x),
+\end{equation}
+\begin{align}
+V' &= V_0\,k\,G^{k-1}G', \\
+V'' &= V_0\,k\left[(k-1)G^{k-2}G'^2+G^{k-1}G''\right].
+\end{align}
+Near the minimum $G\simeq\beta x$, so the small-field limit, $m_\varphi$ and the reheating stage are the same as for Model~1. The deformation matters only on the plateau ($x\gtrsim 5$--6 for $1-\kappa\sim 10^{-4}$), i.e.\ for the CMB observables, not for the lattice dynamics, except through $\lambda$ and $N_*$.
+
+%----------------------------------------------------------------------
+\subsection{Model 4: deformed T-model}
+\label{sec:dT}
+%----------------------------------------------------------------------
+\begin{equation}
+V(\varphi) = \frac{V_0}{4}\left[1+\kappa-(\kappa-1)\cosh(\beta x)\right]^{2}\tanh^{k}(\gamma x).
+\label{eq:VdT}
+\end{equation}
+For $\kappa=1$ the prefactor is $V_0$ and Eq.~\eqref{eq:VT} is recovered. Writing $H\equiv 1+\kappa+(1-\kappa)\cosh\beta x$, $H'=(1-\kappa)\beta\sinh\beta x$, $H''=(1-\kappa)\beta^2\cosh\beta x$, and $T_k\equiv t^k$ with $T_k'$, $T_k''$ given by the T-model expressions above divided by $V_0$:
+\begin{align}
+V' &= \frac{V_0}{4}\left[2HH'\,T_k+H^2\,T_k'\right], \\
+V'' &= \frac{V_0}{4}\left[2\left(H'^2+HH''\right)T_k+4HH'\,T_k'+H^2\,T_k''\right],
+\end{align}
+with $T_k' = k\gamma\,t^{k-1}s^2$ and $T_k''=k\gamma^2 t^{k-2}s^2[(k-1)s^2-2t^2]$. At the minimum $H\to 2$, so the small-field limit matches Model~2.
+
+%======================================================================
+\section{Benchmark points from the data}
+\label{sec:bench}
+%======================================================================
+
+Table~\ref{tab:bench} collects the parameter points and limits quoted in arXiv:2510.18656 (exact numerical $n_s$, $r$). These are the recommended runs.
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}l c c c l l l@{}}
+\toprule
+Model & $k$ & $\kappa$ & $\aatt$ & $N_*$ / $\trh$ & $(n_s,\ r)$ & Comment \\
+\midrule
+E (Starobinsky) & 2 & 1 & 1 & $\trh=10^2$--$10^{10}$ GeV & $0.958$--$0.963$,\ $\simeq0.0035$ & \textit{Planck} OK, below SPA/ACT \\
+E & 2 & 1 & $\le 25$ & & & upper limit from $r$ \\
+T & 2 & 1 & 1 & same & $0.956$--$0.961$ & tension with \textit{Planck} \\
+T & 2 & 1 & $\le 11$ & & & upper limit from $r$ \\
+\midrule
+E & 4 & 1 & 1 & $N_*\simeq 55.7$ (any $\trh$) & $\simeq 0.965$ & $w=1/3$, $N_*$ indep.\ of $\trh$; $\aatt\lesssim17$ \\
+E & 6 & 1 & 1 & $N_*\simeq 56$--58 & $\simeq 0.965$ & $\aatt<16$ \\
+E & 6 & 1 & $\simeq5$ & $N_*\simeq 58$ & $\simeq 0.966$ & touches ACT 95\% \\
+E & 10 & 1 & $\simeq5$ & & & overlaps ACT and SPA \\
+T & 4 & 1 & $\lesssim11$ & & & \textit{Planck} OK, below ACT \\
+T & 6 & 1 & 1 & $N_*\simeq 58$ & $\simeq 0.965$ & \\
+T & 10 & 1 & 1 & $N_*\simeq 59$--61.5 & $0.965$--$0.967$ & enters ACT 95\% \\
+\midrule
+deformed E & 2 & 0.9999 & 1 & $\trh=10^2$--$10^{10}$ GeV & $0.968$--$0.975$,\ $0.007$--$0.005$ & fits P-ACT-LB; $\aatt\le 9$ \\
+deformed T & 2 & 0.9999 & 1 & same & $0.970$--$0.977$ & fits all three; $\aatt\le 11$ \\
+deformed E & 4 & 0.99999$^\dagger$ & 1 & & $\simeq0.970$,\ $\simeq0.004$ & fits all three; $\aatt\le 15$ \\
+deformed E & 6 & 0.9999 & 4 & $N_*=56$--58 & $\simeq0.974$,\ $\simeq0.016$ & fits all three; $\aatt\le 16$ \\
+deformed T & 4 & 0.99999$^\dagger$ & 1 & & $\simeq0.966$,\ $\simeq0.004$ & SPA OK, marginal ACT \\
+deformed T & 6 & 0.99999$^\dagger$ & 1 & & $\simeq0.969$,\ $\simeq0.012$ & overlap of all three \\
+\bottomrule
+\end{tabular}}
+\caption{Benchmark points and upper limits on $\aatt$ from arXiv:2510.18656. Empty cells: not quoted in the paper.
+$^\dagger$The text of the paper says $\kappa=0.9999$ for $k=4,6$, but the figure file is named \texttt{fulltplots\_kappa0p99999.pdf}, and our background solver (\texttt{notes/attractor\_ics.py}) reproduces the quoted $n_s$, $r$ only for $\kappa=0.99999$; with $\kappa=0.9999$ these points give a blue tilt ($n_s=0.99$--$1.04$). The deformed E-model $k=6$, $\aatt=4$ point does match $\kappa=0.9999$ ($n_s=0.973$, $r=0.017$). The deformed T $k=6$ value $r\simeq0.012$ is not reproduced for either $\kappa$ (we get $r\simeq0.004$).}
+\label{tab:bench}
+\end{table}
+
+\paragraph{Recommended minimal set of runs.}
+\begin{enumerate}
+\item E-model $k=2$, $\aatt=1$ (Starobinsky): reference; compare with the existing literature.
+\item E- and T-models with $k=6$ and $k=10$, $\aatt=1$ and $\aatt=5$: the reheating dynamics (stiff $w$, fragmentation) is what drives $N_*$ up and must be computed on the lattice.
+\item Deformed E- and T-models, $\kappa=0.9999$, $k=2,4,6$, $\aatt=1$ (and $\aatt=4$ for deformed E, $k=6$).
+\end{enumerate}
+
+%======================================================================
+\section{Implementation notes for \textsc{CosmoLattice}}
+\label{sec:impl}
+%======================================================================
+
+\subsection{Program variables}
+Following the conventions of the existing models (\texttt{lphi4.h}: $\at=1$, $\omega_*=\sqrt\lambda\,\varphi_i$; \texttt{tanh2.h}: $\at=0$, $\omega_*=m$), write the small-field limit as $V\simeq(\lambda_k/k)\,\MP^{4-k}\varphi^k$, i.e.
+\begin{equation}
+\lambda_k^{(E)} = k\,\tfrac34\lambda\,\beta^k,\qquad \lambda_k^{(T)} = k\,\tfrac34\lambda\,\gamma^k,
+\end{equation}
+and choose
+\begin{equation}
+f_* = \MP,\qquad
+\omega_* = \sqrt{\lambda_k}\,\MP\,x_i^{(k-2)/2},\qquad
+\at = \frac{3(k-2)}{k+2},
+\end{equation}
+where $x_i$ is the initial field value. The choice of $\at$ makes the oscillation frequency of a homogeneous condensate constant in program time ($\at=0$ for $k=2$, $\at=1$ for $k=4$, $\at=3/2$ for $k=6$, $\at=2$ for $k=10$). With $\tilde\varphi=x$, the program potential $\tilde V=V/(f_*^2\omega_*^2)$ is
+\begin{equation}
+\tilde V_{E}(x) = \frac{F_E(x)}{k\,\beta^k\,x_i^{k-2}},\qquad
+\tilde V_{T}(x) = \frac{F_T(x)}{k\,\gamma^k\,x_i^{k-2}},
+\end{equation}
+with $F\equiv V/V_0$ the shape functions of Sec.~\ref{sec:models} (same normalization for the deformed versions). For $k=2$: $\tilde V_E = \tfrac{3\aatt}{4}F_E$, $\tilde V_T = 3\aatt F_T$. Program derivatives are simply $\tilde V'(x)$, $\tilde V''(x)$ with the same prefactor. $\lambda$ then enters only through $\omega_*$ (the time unit), as for \texttt{lphi4}.
+
+\emph{Caveat for $k\ge6$:} once the condensate fragments the effective equation of state drops to $w\to1/3$, and $\at=1$ becomes the natural choice at late times. Check energy conservation and the time step for both choices.
+
+\subsection{Initial conditions}
+\begin{itemize}
+\item Start at (or slightly before) the end of inflation, $x_i\simeq x_{\rm end}$ from the formulas above, with the initial velocity from a background (homogeneous) integration of $\ddot\varphi+3H\dot\varphi+\partial_\varphi V=0$ from $x_*$ down to $x_i$. Slow-roll velocities underestimate $|\dot\varphi|$ at $\varepsilon_H\sim1$.
+\item \texttt{notes/attractor\_ics.py} does this: given (model, $\aatt$, $k$, $\kappa$, $N_*$) it integrates the background in $e$-folds, finds $x_{\rm end}$ ($\varepsilon_H=1$) and $x_*$, fixes $\lambda$ from $A_s$, and prints \texttt{lambda}, \texttt{initial\_amplitudes} and \texttt{initial\_momenta} at the end of inflation. For Starobinsky with $N_*=55$ it gives $\lambda=1.57\times10^{-10}$, $x_*=5.32$, $x_{\rm end}=0.615$. $N_*$ is an input; it must be chosen from $\trh$ (Eq.~(A.12) of the paper for $k=2$) or, for $k\ge6$, from the fragmentation temperature measured on the lattice.
+\item The benchmark parameter files \texttt{models/parameter-files/attractor\{E,T\}\_*.in} were generated with it.
+\end{itemize}
+
+\subsection{Daughter fields and reheating}
+The paper treats reheating perturbatively ($\Gamma_\varphi$ free, $\trh$ as a parameter). For lattice runs, add as an option:
+\begin{itemize}
+\item quadratic coupling $\tfrac12 g^2\varphi^2\chi^2$ (parametric resonance; already used in \texttt{tanh2.h}, \texttt{lphi4.h});
+\item for $k\ge 4$ the inflaton self-resonance alone is the key physics: run first with no daughter field to measure the fragmentation time and $T_{\rm frag}$, which enter $N_*$ through $\max[\trh,T_{\rm frag}]$.
+\end{itemize}
+
+\subsection{Numerical caveats}
+\begin{itemize}
+\item \textbf{Deformed models:} the deformation $1-\kappa\sim10^{-4}$ is invisible near the minimum. Use \texttt{double}: single precision cannot resolve $1-\kappa\sim10^{-4}$ on the plateau. Near the minimum write $G=\sinh\beta x-2\kappa\sinh^2(\beta x/2)$ to avoid the cancellation in $\kappa(1-\cosh\beta x)$.
+\item \textbf{Powers of negative bases:} $k$ must be an even integer. Since $u=1-e^{-\beta x}$ and $\tanh(\gamma x)$ are negative for $x<0$, use an integer power (e.g.\ \texttt{pow<k>} with compile-time $k$, or a template parameter); a floating-point \texttt{pow(u, k)} returns NaN for $u<0$ only when $k$ is non-integer, so never read $k$ as a float.
+\item \textbf{E-model asymmetry:} for $x<0$, $V$ grows like $e^{2|\beta x|}$ (for $k=2$); the time step must resolve the steeper side.
+\item \textbf{$\tanh^k$ for large $k$:} near the minimum $V''\propto x^{k-2}$ vanishes; the effective mass is field dependent, so initial fluctuation spectra should use the mass at $x_i$, not at $x=0$.
+\end{itemize}
+
+\subsection{Overlap with existing models}
+\label{sec:existing}
+\texttt{models/tanh2.h} implements $V=\tfrac12\Lambda^4\tanh^2(\varphi/M)$, i.e.\ the $k=2$ T-model with $M=\sqrt{6\aatt}\,\MP$ and $\Lambda^4=\tfrac32\lambda\MP^4$. \texttt{models/NMC\_tanh4\_w\_mass\_P.h} is a non-minimally coupled $\tanh^4$-type model. The new headers can be validated against \texttt{tanh2.h} by setting $k=2$, $\kappa=1$.
+
+%======================================================================
+\section{Other viable families (outside the scope of the paper)}
+\label{sec:others}
+%======================================================================
+The paper's introduction lists other models argued to remain compatible with ACT DR6; they are candidates for later, but their data fits were not checked here:
+\begin{itemize}
+\item chaotic/polynomial inflation with non-minimal coupling $\xi\varphi^2R$ (giving $r\sim10^{-2}$); \texttt{NMC\_lphi4.h} is a starting point;
+\item Starobinsky with higher-curvature corrections ($R^3$, etc.) and radiatively corrected attractors;
+\item polynomial (hilltop/inflection-point) potentials and smooth hybrid inflation ($n_s\simeq0.97$).
+\end{itemize}
+
+\end{document}
