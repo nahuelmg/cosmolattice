@@ -6,7 +6,7 @@ cells = []
 
 cells.append(md(r"""# Preheating in $\alpha$-attractor models: CosmoLattice runs
 
-Plots of one lattice run for each new model:
+Secs. 1–5: one lattice run for each new model, $k=2$ (below). Sec. 6: the rest of the benchmark set of `notes/inflation_models.tex`.
 
 | Run | Model | Parameters | Daughter coupling |
 |---|---|---|---|
@@ -341,6 +341,126 @@ for ax in axes:
 axes[0].set_title("inflaton"); axes[1].set_title("daughter"); axes[2].set_title(r"GWs today: $h^2\Omega_{\rm GW}(f)$")
 axes[0].legend(fontsize=8); axes[2].legend(fontsize=7)
 fig.tight_layout()"""))
+
+cells.append(md(r"""## 6. Benchmark set of `notes/inflation_models.tex`
+
+Preheating runs of the remaining benchmark points (`runs/run_preheating_batch.sh`, outputs in `runs/benchmarks/<name>/`), with the same lattice as above ($N=64$, $k_{\rm IR}=0.5\,\omega_*$, `kCutOff = 20`, GWs on) and $g=2\sqrt{q_0}\,\omega_*/\varphi_i$:
+
+| Points | $q_0$ | $dt$ | $\tilde t_{\max}$ | Status |
+|---|---|---|---|---|
+| E, T $k=2$ ($\kappa=1$: Secs. 1–5; $\kappa=0.9999$: here) | $10^4$ | 0.01 | 300 | run |
+| E $k=4$, deformed E/T $k=4$ ($\kappa=0.99999$) | $10^4$ | 0.005 | 300 | run |
+| E/T $k=6$, $k=10$ (5 points) | — | — | — | **not run**, see below |
+
+**Why $dt=0.005$ for $k=4$.** $q$ is constant for $k=4$, so $\chi$ oscillates at $\simeq2\sqrt{q}=200$ in program time for the whole run; $dt=0.01$ sits at the leapfrog limit $\omega\,dt=2$, and the Friedmann violation grew to $4\times10^{-2}$ (`benchmarks/E_k4_a1_dt0p01`). With $dt=0.005$ it is $\lesssim9\times10^{-3}$, decreasing as $dt^2$.
+
+**Why no $k\ge6$.** For the paper's $\alpha=1$–5 neither channel fragments the condensate in lattice-accessible time:
+- self-resonance ($g=0$, `benchmarks/selfres_E_k6_a1`, $k_{\rm IR}=0.05$): no growth of fluctuations to $a\simeq34$;
+- $g$ with $q_0=10$ (`benchmarks/E_k6_a1_q10_kIR0p5`): $\chi$ never grows. The real oscillation period near the end of inflation is $\simeq20$ program-time units instead of $2\pi$, so $q_{\rm eff}$ is far below the estimate, and only $\tilde k\lesssim0.5$ is unstable. A single-mode Floquet scan on that background gives a growth of $n_k$ of only $10^3$–$10^5$ by $\tilde t=150$ for $g$ up to $100\times$ larger, which would need $dt\sim10^{-4}$.
+
+Both runs are included below as $k=6$ references: $w$ stays at the condensate value $(k-2)/(k+2)=1/2$."""))
+cells.append(code(r"""BENCH = {
+    "E k=2 kappa=0.9999": "benchmarks/E_k2_a1_kappa0p9999",
+    "T k=2 kappa=0.9999": "benchmarks/T_k2_a1_kappa0p9999",
+    "E k=4": "benchmarks/E_k4_a1",
+    "E k=4 kappa=0.99999": "benchmarks/E_k4_a1_kappa0p99999",
+    "T k=4 kappa=0.99999": "benchmarks/T_k4_a1_kappa0p99999",
+    "E k=6 g, q0=10 (no resonance)": "benchmarks/E_k6_a1_q10_kIR0p5",
+    "E k=6 g=0 (self-resonance only)": "benchmarks/selfres_E_k6_a1",
+}
+REFERENCE = {"E k=2 Starobinsky": "E_starobinsky_gw", "T k=2": "T_k2_a1_gw"}
+ALL = {**REFERENCE, **BENCH}
+for name, d in BENCH.items():
+    RUNS[name] = os.path.join(BASE, d)
+    data[name] = load_run(RUNS[name])
+for name, d in REFERENCE.items():                 # same runs as Secs. 1-5, under short names
+    RUNS[name] = os.path.join(BASE, d)
+    data[name] = load_run(RUNS[name])
+PRODUCTION = [n for n in ALL if "k=6" not in n]   # runs with preheating
+
+
+def w_of_t(r):
+    E = r["E"]
+    kin = E["E^kin_scal0"] + E["E^kin_scal1"]
+    grad = E["E^grad_scal0"] + E["E^grad_scal1"]
+    V = E["Vpot_term_0"] + E["Vpot_term_1"]
+    return E["t"], (kin - grad / 3 - V) / E["E_tot"]
+
+
+def running_mean(t, y, width):
+    n = max(1, int(round(width / (t[1] - t[0]))))
+    return t[n // 2: n // 2 + len(y) - n + 1], np.convolve(y, np.ones(n) / n, mode="valid")
+
+
+rows = []
+for name in ALL:
+    r = data[name]; p = read_params(RUNS[name]); E = r["E"]
+    t, w = w_of_t(r); m = t > t[-1] - 20
+    chi = (E["E^kin_scal1"] + E["E^grad_scal1"]) / E["E_tot"]
+    rows.append((name, p["k"][0], p["kappa"][0], p["alphaAtt"][0], p["g"][0], p["dt"][0],
+                 f"{t[-1]:.0f}", f"{r['a']['a'][-1]:.1f}", f"{w[m].mean():.3f}", f"{chi[m].mean():.2f}",
+                 f"{r['GW']['rhoGW_over_rho'][-1]:.1e}", f"{np.abs(r['cons']['rel_diff_friedmann']).max():.1e}"))
+hdr = ("run", "k", "kappa", "alphaAtt", "g", "dt", "t_end", "a_end", "<w> last 20", "chi frac", "rhoGW/rho", "max Friedmann viol.")
+widths = [max(len(str(x[i])) for x in rows + [hdr]) for i in range(len(hdr))]
+for row in [hdr] + rows:
+    print("  ".join(str(v).ljust(wd) for v, wd in zip(row, widths)))"""))
+
+cells.append(md(r"""### Equation of state, energy transfer and accuracy
+$w$ averaged over a window of 20 program-time units (longer than the oscillation period of all runs), against $\ln a$; fraction of the energy in $\chi$ (kinetic + gradient); Friedmann-constraint violation."""))
+cells.append(code(r"""fig, axes = plt.subplots(1, 3, figsize=(18, 4.4))
+for j, name in enumerate(ALL):
+    r = data[name]; ls = "--" if "k=6" in name else "-"
+    t, w = w_of_t(r)
+    tw, wm = running_mean(t, w, 20)
+    lna = lambda tt: np.log(np.interp(tt, r["a"]["t"], r["a"]["a"]))
+    axes[0].plot(lna(tw), wm, ls, color=f"C{j}", label=name)
+    E = r["E"]
+    tc, cm_ = running_mean(t, (E["E^kin_scal1"] + E["E^grad_scal1"]) / E["E_tot"], 20)
+    axes[1].plot(lna(tc), cm_, ls, color=f"C{j}", label=name)
+    c = r["cons"]
+    axes[2].semilogy(lna(c["t"][1:]), np.abs(c["rel_diff_friedmann"][1:]), ls, color=f"C{j}", lw=1, label=name)
+for y, lab in [(0, "matter"), (1 / 3, "radiation"), (0.5, r"$\varphi^6$ condensate")]:
+    axes[0].axhline(y, c="gray", ls=":", lw=1); axes[0].text(0.05, y + 0.01, lab, color="gray", fontsize=8)
+axes[0].set_ylabel(r"$\langle w\rangle$"); axes[1].set_ylabel(r"$\rho_\chi/\rho_{\rm tot}$")
+axes[2].set_ylabel("Friedmann constraint rel. violation")
+for ax in axes:
+    ax.set_xlabel(r"$\ln a$")
+axes[0].legend(fontsize=7)
+fig.tight_layout()"""))
+
+cells.append(md(r"""### Final field and GW spectra (at the end of each run)
+$k$ in units of each run's $\omega_*$; the dotted line is $k_{\max}$ of the lattice."""))
+cells.append(code(r"""fig, axes = plt.subplots(1, 3, figsize=(18, 4.4))
+for j, name in enumerate(PRODUCTION):
+    r = data[name]
+    for ax, key in zip(axes, ["S_phi", "S_chi", "S_gw"]):
+        b = r[key][-1]; m = b[:, 1] > 0
+        ax.loglog(b[m, 0], b[m, 1], color=f"C{j}", label=f"{name}, t={r['t_s'][-1]:.0f}")
+for ax, lab in zip(axes, [r"$\Delta_{\tilde\varphi}$", r"$\Delta_{\tilde\chi}$", r"$\Omega_{\rm GW}$"]):
+    ax.axvline(kmax_tilde, c="r", ls=":", lw=1); ax.set_xlabel(r"$k/\omega_*$"); ax.set_ylabel(lab)
+axes[0].set_title("inflaton"); axes[1].set_title("daughter"); axes[2].set_title("GWs")
+axes[2].legend(fontsize=7)
+fig.tight_layout()"""))
+
+cells.append(md(r"""### GW spectra today
+Redshifted as in Sec. 5 (instant RD after each run, $N_{\rm post}=0$). For $k=4$ this is close to exact, since $w\simeq1/3$ during and after the run; for $k=2$ it is an upper bound.
+The E $k=4$ spectra are **not resolved**: they are spiky in the IR (few low-multiplicity modes, so the printed "peak" is an IR spike) and have a second bump near $k_{\max}$. Only the order of magnitude, $h^2\Omega_{\rm GW}\sim10^{-12}$–$10^{-11}$, is meaningful. The two E $k=4$ curves overlap in all plots."""))
+cells.append(code(r"""fig, ax = plt.subplots(figsize=(8, 4.8))
+for j, name in enumerate(PRODUCTION):
+    f, h2o, info = gw_today(name)
+    m = h2o > 0
+    ip = np.argmax(h2o)
+    ax.loglog(f[m], h2o[m], color=f"C{j}", label=name)
+    print(f"{name:22s} omega_* = {info['omega_star']:.2e} GeV, eps_i = {info['eps_i']:.3f}, "
+          f"peak f = {f[ip]:.2e} Hz, h^2 Omega_GW = {h2o[ip]:.1e}")
+ax.set_xlabel(r"$f$ today [Hz]"); ax.set_ylabel(r"$h^2\Omega_{\rm GW}(f)$ today"); ax.legend(fontsize=8)
+fig.tight_layout()"""))
+
+cells.append(md(r"""### Summary
+- **Deformation:** the $\kappa\neq1$ runs reproduce the undeformed ones: $w$ and the $\chi$ fraction to $\sim1\%$, $\rho_{\rm GW}/\rho$ within $\sim25\%$. The deformation changes the plateau ($n_s$, $r$, initial conditions), not the minimum where preheating happens.
+- **$k=2$:** $w\simeq0.23$–0.24 after backreaction and slowly decreasing (massive inflaton quanta), $\rho_{\rm GW}/\rho\sim10^{-4}$.
+- **$k=4$:** $w\simeq1/3$ independently of fragmentation. In the E-models the condensate is still mostly intact at $\tilde t=300$ ($\chi$ holds $\sim20\%$); the T-model transfers $\sim50\%$ and has $\sim6\times$ more GWs. $\rho_{\rm GW}/\rho\sim10^{-6}$–$10^{-5}$.
+- **$k\ge6$ at $\alpha=1$–5:** no fragmentation, $w$ stays at $(k-2)/(k+2)$. The "fragmentation drives $w\to1/3$" result needs strong self-resonance (small $\alpha$) and is not reached for these benchmarks."""))
 
 cells.append(md(r"""## Notes and caveats
 - **These runs are UV-limited.** $N=64$ with $k_{\rm IR}=0.5$ gives $k_{\max}\simeq\sqrt3\,N k_{\rm IR}/2\simeq28$ (red dotted line). The resonance band ($k\lesssim q_0^{1/4}m\sim10$) is resolved. But after backreaction ($\tilde t\gtrsim100$) the daughter, inflaton and GW spectra keep growing towards $k_{\max}$, and $\Omega_{\rm GW}$ peaks at $k\simeq17$, close to the cutoff. Peak position, amplitude and the final $\rho_{\rm GW}/\rho\sim10^{-4}$ are therefore **not converged**. Repeat at $N=128$–256 with the same $k_{\rm IR}$ (larger $k_{\max}$) before quoting numbers.

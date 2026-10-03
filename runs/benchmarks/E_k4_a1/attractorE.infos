@@ -1,0 +1,70 @@
+Parameters: 
+Important parameters:
+
+                   N       64                  
+             withGWs       true                
+           expansion       true                
+                tMax       300                 
+          doLFforGWs       true                
+                  dt       0.005               
+     tOutputRareFreq       20                  
+             evolver       VV2                 
+                 kIR       0.5                 
+       tOutputInfreq       10                  
+             kCutOff       20                  
+                  t0       0                   
+         tOutputFreq       0.5                 
+
+
+Other parameters:
+
+   tNonLinearAxionU1       -1                  
+             ext_PS0       ✖                 
+measureDefectsStructure       false               
+         doDiffusion       false               
+ saveUnbinnedSpectra       false               
+        flagChiralPS       false               
+          PS_version       1                   
+           tolerance       -1                  
+         hdf5Spectra       false               
+        hdf5Averages       false               
+           deltaKBin       1                   
+    spectraVerbosity       0                   
+measureDefectsEnergies       false               
+     snap_uppercoord       64 64 64 64 64 64 64 64 64 64
+            baseSeed       1718208121          
+         tOutputVerb       0.5                 
+             ext_PS1       ✖                 
+           snapshots       ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖
+      snap_stepcoord       1 1 1 1 1 1 1 1 1 1 
+     initial_momenta       -2.285415e+31 0     
+     fixedBackground       false               
+                   k       4                   
+             PS_type       1                   
+           ICtype_U1       Default             
+          outputfile       ./                  
+              lambda       1.601940e-10        
+      overwriteFiles       true                
+        fn_verbosity       0                   
+         tBackupFreq       -1                  
+               kappa       1.0                 
+               input       run.in              
+     snap_lowercoord       0 0 0 0 0 0 0 0 0 0 
+            alphaAtt       1.0                 
+       hdf5FlushFreq       10                  
+            ICtype_S       Default             
+                   g       2.923e-03           
+       appendToFiles       false               
+     GWprojectorType       1                   
+              flagON       false               
+       print_headers       true                
+            load_dir       ✖                 
+                  a0       1                   
+  initial_amplitudes       2.680893e+18 0      
+
+The simulation started on the d3 m10 y2026 around h2m3.
+It will be running on an MPI grid of (1,1,1) cores with 2 threads per MPI task.
+Memory usage is estimated to be around 30.71 MB per MPI task.
+The simulation finished on the d3 m10 y2026 around h3m2.
+The timer indicates that it ran for 3534.413s.
+As it ran on 2 cores, this corresponds to 1.96356 core hours.

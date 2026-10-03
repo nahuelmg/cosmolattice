@@ -30,7 +30,10 @@ Then simulate preheating with GWs and redshift the GW spectra to today, followin
 | `notes/inflation_models.tex/.pdf` | Physics note: data, viable models, V, V′, V″, benchmarks table |
 | `notes/implementation_report.tex/.pdf` | How it was built, files, parameter choices, validation, and the derivation of the GW redshift to today (f, h²Ω_GW) |
 | `runs/E_starobinsky_gw/`, `runs/T_k2_a1_gw/` | Preheating runs with GWs (`run.in` + full output) |
-| `runs/attractor_runs.ipynb` | Executed notebook: energies, w, field/GW spectra, and Sec. 5 with today's f and h²Ω_GW |
+| `runs/attractor_runs.ipynb` | Executed notebook: energies, w, field/GW spectra, Sec. 5 with today's f and h²Ω_GW, Sec. 6 the benchmark set |
+| `runs/run_benchmarks.sh` | Generic driver: copies `models/parameter-files/attractor<name>.in` to `runs/benchmarks/<name>/run.in`, applies `-- key=value` overrides, runs, skips finished runs (`done` file) |
+| `runs/run_preheating_batch.sh` | The benchmark preheating batch (per-run g, dt, tMax, with the reasoning in comments) |
+| `runs/benchmarks/` | Outputs of that batch + reference/failed runs (`E_k4_a1_dt0p01`, `E_k6_a1_q10_kIR0p5`, `selfres_E_k6_a1`), `batch.log`, `summarize.py` |
 | `runs/make_notebook.py` | Generates the notebook. **Edit this, not the .ipynb**, then rebuild (see below) |
 
 ### Model header conventions
@@ -78,6 +81,9 @@ cd ../notes && pdflatex implementation_report.tex && pdflatex implementation_rep
 - **Runs are UV-limited:** spectra pile up near k_max ≈ 28 ω*, and the GW peak (k≈17) is close to it. Rerun at **N=128–256 with the same k_IR** before quoting numbers (N=128 ≈ 8× slower).
 - Today's GW values assume instant radiation domination after t_f=290 (upper bound, since w≈0.24 then). The notebook has `N_POST`, `W_POST` knobs.
 - N_* in the benchmark files was taken from the paper's reheating ranges. For k≥6 it should be fixed from the fragmentation temperature measured on the lattice.
-- Not yet run: k≥4 models, deformed models, `g` scans, and validation of `attractorT` (k=2, κ=1) against the existing `models/tanh2.h` (M=√(6α)MP, Λ⁴=1.5λMP⁴).
+- Benchmark batch (2026-10-03, see notebook Sec. 6): deformed k=2 and all k=4 points run with g (q0=1e4). k=4 needs dt=0.005 (χ frequency ≈2√q=200 in program time all run long; dt=0.01 is at the leapfrog limit). Friedmann violation ≲9e-3 for k=4 (∝dt²).
+- **k≥6 at the paper's α=1–5 do not fragment**: g=0 self-resonance gives nothing to a≈34; with g, the real oscillation period is ≈20 program units (not 2π), q_eff is small and only k̃≲0.5 is unstable; a mode scan gives n growth ≤1e5 by t=150 even for g×100 (would need dt~1e-4). w stays at (k−2)/(k+2). Options: small α (strong self-resonance) or long g=0 baselines.
+- The python with scipy/jupyter on the second computer is `~/anaconda3/envs/cosmolattice/bin/python` (system python3 has numpy only).
+- Not yet run: `g` scans, and validation of `attractorT` (k=2, κ=1) against the existing `models/tanh2.h` (M=√(6α)MP, Λ⁴=1.5λMP⁴).
 - A PR to upstream should probably exclude `runs/` and `papers/` (data and third-party sources).
 - The user communicates in English, is a physicist (UBA), and prefers that the remote takes priority on pulls.

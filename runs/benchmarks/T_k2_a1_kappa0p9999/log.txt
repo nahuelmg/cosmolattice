@@ -1,0 +1,972 @@
+[34m(0.000s) 
+[0mUsing FFTW backend for FFTs.
+
+[34m(0.000s) MPI Rank 0 - memorytoolbox.h:209 -->
+[0mUsing the following domain decomposition:(1 1 1 ).
+[34m(0.027s) cosmolattice.cpp:103 -->
+[0mModel name: attractorT
+[34m(0.027s) cosmolattice.cpp:110 -->
+[0mThis simulation will run with the following parameters: 
+Important parameters:
+
+                   N       64                  
+             withGWs       true                
+           expansion       true                
+                tMax       300                 
+          doLFforGWs       true                
+                  dt       0.01                
+     tOutputRareFreq       20                  
+             evolver       VV2                 
+                 kIR       0.5                 
+       tOutputInfreq       10                  
+             kCutOff       20                  
+                  t0       0                   
+         tOutputFreq       0.5                 
+
+
+Other parameters:
+
+   tNonLinearAxionU1       -1                  
+             ext_PS0       ✖                 
+measureDefectsStructure       false               
+         doDiffusion       false               
+ saveUnbinnedSpectra       false               
+        flagChiralPS       false               
+          PS_version       1                   
+           tolerance       -1                  
+         hdf5Spectra       false               
+        hdf5Averages       false               
+           deltaKBin       1                   
+    spectraVerbosity       0                   
+measureDefectsEnergies       false               
+     snap_uppercoord       64 64 64 64 64 64 64 64 64 64
+            baseSeed       1642660182          
+         tOutputVerb       1                   
+             ext_PS1       ✖                 
+           snapshots       ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖ ✖
+      snap_stepcoord       1 1 1 1 1 1 1 1 1 1 
+     initial_momenta       -2.821692e+31 0     
+     fixedBackground       false               
+                   k       2                   
+             PS_type       1                   
+           ICtype_U1       Default             
+          outputfile       ./                  
+              lambda       2.778776e-10        
+      overwriteFiles       true                
+        fn_verbosity       0                   
+         tBackupFreq       -1                  
+               kappa       0.9999              
+               input       run.in              
+     snap_lowercoord       0 0 0 0 0 0 0 0 0 0 
+            alphaAtt       1.0                 
+       hdf5FlushFreq       10                  
+            ICtype_S       Default             
+                   g       1.987e-03           
+       appendToFiles       false               
+     GWprojectorType       1                   
+              flagON       false               
+       print_headers       true                
+            load_dir       ✖                 
+                  a0       1                   
+  initial_amplitudes       2.042439e+18 0      
+
+[34m(0.315s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 0 done. Current time:0
+
+[34m(8.339s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 100 done. Current time:1
+
+[34m(15.885s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 200 done. Current time:2
+
+[34m(23.477s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 300 done. Current time:3
+
+[34m(31.082s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 400 done. Current time:4
+
+[34m(38.589s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 500 done. Current time:5
+
+[34m(46.018s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 600 done. Current time:6
+
+[34m(53.465s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 700 done. Current time:7
+
+[34m(60.946s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 800 done. Current time:8
+
+[34m(68.707s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 900 done. Current time:9
+
+[34m(76.344s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 1000 done. Current time:10
+
+[34m(83.902s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 1100 done. Current time:11
+
+[34m(91.369s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 1200 done. Current time:12
+
+[34m(98.833s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 1300 done. Current time:13
+
+[34m(106.248s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 1400 done. Current time:14
+
+[34m(113.733s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 1500 done. Current time:15
+
+[34m(121.223s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 1600 done. Current time:16
+
+[34m(128.968s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 1700 done. Current time:17
+
+[34m(136.422s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 1800 done. Current time:18
+
+[34m(143.865s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 1900 done. Current time:19
+
+[34m(151.355s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 2000 done. Current time:20
+
+[34m(158.811s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 2100 done. Current time:21
+
+[34m(166.333s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 2200 done. Current time:22
+
+[34m(173.891s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 2300 done. Current time:23
+
+[34m(181.407s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 2400 done. Current time:24
+
+[34m(189.025s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 2500 done. Current time:25
+
+[34m(196.467s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 2600 done. Current time:26
+
+[34m(203.959s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 2700 done. Current time:27
+
+[34m(211.539s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 2800 done. Current time:28
+
+[34m(219.072s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 2900 done. Current time:29
+
+[34m(226.654s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 3000 done. Current time:30
+
+[34m(234.123s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 3100 done. Current time:31
+
+[34m(241.577s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 3200 done. Current time:32
+
+[34m(249.216s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 3300 done. Current time:33
+
+[34m(256.903s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 3400 done. Current time:34
+
+[34m(264.444s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 3500 done. Current time:35
+
+[34m(272.031s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 3600 done. Current time:36
+
+[34m(279.456s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 3700 done. Current time:37
+
+[34m(286.995s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 3800 done. Current time:38
+
+[34m(294.428s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 3900 done. Current time:39
+
+[34m(302.029s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 4000 done. Current time:40
+
+[34m(309.739s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 4100 done. Current time:41
+
+[34m(317.271s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 4200 done. Current time:42
+
+[34m(324.791s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 4300 done. Current time:43
+
+[34m(332.212s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 4400 done. Current time:44
+
+[34m(339.669s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 4500 done. Current time:45
+
+[34m(347.231s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 4600 done. Current time:46
+
+[34m(354.727s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 4700 done. Current time:47
+
+[34m(362.202s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 4800 done. Current time:48
+
+[34m(369.914s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 4900 done. Current time:49
+
+[34m(377.494s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 5000 done. Current time:50
+
+[34m(384.982s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 5100 done. Current time:51
+
+[34m(392.497s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 5200 done. Current time:52
+
+[34m(400.036s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 5300 done. Current time:53
+
+[34m(407.580s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 5400 done. Current time:54
+
+[34m(415.176s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 5500 done. Current time:55
+
+[34m(422.595s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 5600 done. Current time:56
+
+[34m(430.230s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 5700 done. Current time:57
+
+[34m(437.779s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 5800 done. Current time:58
+
+[34m(445.338s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 5900 done. Current time:59
+
+[34m(452.984s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 6000 done. Current time:60
+
+[34m(460.525s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 6100 done. Current time:61
+
+[34m(467.945s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 6200 done. Current time:62
+
+[34m(475.494s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 6300 done. Current time:63
+
+[34m(483.080s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 6400 done. Current time:64
+
+[34m(490.857s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 6500 done. Current time:65
+
+[34m(498.478s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 6600 done. Current time:66
+
+[34m(506.046s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 6700 done. Current time:67
+
+[34m(513.524s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 6800 done. Current time:68
+
+[34m(521.054s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 6900 done. Current time:69
+
+[34m(528.708s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 7000 done. Current time:70
+
+[34m(536.289s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 7100 done. Current time:71
+
+[34m(543.861s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 7200 done. Current time:72
+
+[34m(551.609s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 7300 done. Current time:73
+
+[34m(559.179s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 7400 done. Current time:74
+
+[34m(566.770s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 7500 done. Current time:75
+
+[34m(574.448s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 7600 done. Current time:76
+
+[34m(582.160s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 7700 done. Current time:77
+
+[34m(589.846s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 7800 done. Current time:78
+
+[34m(597.401s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 7900 done. Current time:79
+
+[34m(605.045s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 8000 done. Current time:80
+
+[34m(612.897s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 8100 done. Current time:81
+
+[34m(620.507s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 8200 done. Current time:82
+
+[34m(628.255s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 8300 done. Current time:83
+
+[34m(636.072s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 8400 done. Current time:84
+
+[34m(643.728s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 8500 done. Current time:85
+
+[34m(651.404s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 8600 done. Current time:86
+
+[34m(659.019s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 8700 done. Current time:87
+
+[34m(666.616s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 8800 done. Current time:88
+
+[34m(674.481s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 8900 done. Current time:89
+
+[34m(682.200s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 9000 done. Current time:90
+
+[34m(689.873s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 9100 done. Current time:91
+
+[34m(697.568s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 9200 done. Current time:92
+
+[34m(705.242s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 9300 done. Current time:93
+
+[34m(712.963s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 9400 done. Current time:94
+
+[34m(720.938s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 9500 done. Current time:95
+
+[34m(728.711s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 9600 done. Current time:96
+
+[34m(736.576s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 9700 done. Current time:97
+
+[34m(744.203s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 9800 done. Current time:98
+
+[34m(751.856s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 9900 done. Current time:99
+
+[34m(759.639s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 10000 done. Current time:100
+
+[34m(767.401s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 10100 done. Current time:101
+
+[34m(775.124s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 10200 done. Current time:102
+
+[34m(782.744s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 10300 done. Current time:103
+
+[34m(790.618s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 10400 done. Current time:104
+
+[34m(798.261s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 10500 done. Current time:105
+
+[34m(805.936s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 10600 done. Current time:106
+
+[34m(813.561s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 10700 done. Current time:107
+
+[34m(821.164s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 10800 done. Current time:108
+
+[34m(828.841s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 10900 done. Current time:109
+
+[34m(836.647s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 11000 done. Current time:110
+
+[34m(844.242s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 11100 done. Current time:111
+
+[34m(852.038s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 11200 done. Current time:112
+
+[34m(859.691s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 11300 done. Current time:113
+
+[34m(867.428s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 11400 done. Current time:114
+
+[34m(875.032s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 11500 done. Current time:115
+
+[34m(882.776s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 11600 done. Current time:116
+
+[34m(890.427s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 11700 done. Current time:117
+
+[34m(898.068s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 11800 done. Current time:118
+
+[34m(905.704s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 11900 done. Current time:119
+
+[34m(913.707s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 12000 done. Current time:120
+
+[34m(921.362s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 12100 done. Current time:121
+
+[34m(928.998s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 12200 done. Current time:122
+
+[34m(936.619s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 12300 done. Current time:123
+
+[34m(944.238s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 12400 done. Current time:124
+
+[34m(951.873s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 12500 done. Current time:125
+
+[34m(959.501s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 12600 done. Current time:126
+
+[34m(967.159s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 12700 done. Current time:127
+
+[34m(975.024s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 12800 done. Current time:128
+
+[34m(982.654s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 12900 done. Current time:129
+
+[34m(990.346s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 13000 done. Current time:130
+
+[34m(998.002s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 13100 done. Current time:131
+
+[34m(1005.677s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 13200 done. Current time:132
+
+[34m(1013.288s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 13300 done. Current time:133
+
+[34m(1020.959s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 13400 done. Current time:134
+
+[34m(1028.574s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 13500 done. Current time:135
+
+[34m(1036.493s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 13600 done. Current time:136
+
+[34m(1044.166s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 13700 done. Current time:137
+
+[34m(1051.818s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 13800 done. Current time:138
+
+[34m(1059.432s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 13900 done. Current time:139
+
+[34m(1067.214s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 14000 done. Current time:140
+
+[34m(1074.888s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 14100 done. Current time:141
+
+[34m(1082.554s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 14200 done. Current time:142
+
+[34m(1090.232s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 14300 done. Current time:143
+
+[34m(1098.095s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 14400 done. Current time:144
+
+[34m(1105.722s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 14500 done. Current time:145
+
+[34m(1113.348s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 14600 done. Current time:146
+
+[34m(1120.942s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 14700 done. Current time:147
+
+[34m(1128.561s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 14800 done. Current time:148
+
+[34m(1136.178s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 14900 done. Current time:149
+
+[34m(1143.901s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 15000 done. Current time:150
+
+[34m(1151.794s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 15100 done. Current time:151
+
+[34m(1159.577s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 15200 done. Current time:152
+
+[34m(1167.228s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 15300 done. Current time:153
+
+[34m(1174.840s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 15400 done. Current time:154
+
+[34m(1182.499s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 15500 done. Current time:155
+
+[34m(1190.137s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 15600 done. Current time:156
+
+[34m(1197.756s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 15700 done. Current time:157
+
+[34m(1205.346s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 15800 done. Current time:158
+
+[34m(1213.301s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 15900 done. Current time:159
+
+[34m(1221.056s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 16000 done. Current time:160
+
+[34m(1228.719s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 16100 done. Current time:161
+
+[34m(1236.326s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 16200 done. Current time:162
+
+[34m(1244.044s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 16300 done. Current time:163
+
+[34m(1251.722s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 16400 done. Current time:164
+
+[34m(1259.386s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 16500 done. Current time:165
+
+[34m(1266.998s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 16600 done. Current time:166
+
+[34m(1274.922s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 16700 done. Current time:167
+
+[34m(1282.627s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 16800 done. Current time:168
+
+[34m(1290.242s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 16900 done. Current time:169
+
+[34m(1297.947s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 17000 done. Current time:170
+
+[34m(1305.556s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 17100 done. Current time:171
+
+[34m(1313.184s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 17200 done. Current time:172
+
+[34m(1320.804s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 17300 done. Current time:173
+
+[34m(1328.441s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 17400 done. Current time:174
+
+[34m(1336.313s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 17500 done. Current time:175
+
+[34m(1343.951s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 17600 done. Current time:176
+
+[34m(1351.618s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 17700 done. Current time:177
+
+[34m(1359.259s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 17800 done. Current time:178
+
+[34m(1366.888s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 17900 done. Current time:179
+
+[34m(1374.649s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 18000 done. Current time:180
+
+[34m(1382.356s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 18100 done. Current time:181
+
+[34m(1389.951s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 18200 done. Current time:182
+
+[34m(1397.836s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 18300 done. Current time:183
+
+[34m(1405.451s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 18400 done. Current time:184
+
+[34m(1413.258s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 18500 done. Current time:185
+
+[34m(1420.923s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 18600 done. Current time:186
+
+[34m(1428.583s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 18700 done. Current time:187
+
+[34m(1436.305s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 18800 done. Current time:188
+
+[34m(1443.952s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 18900 done. Current time:189
+
+[34m(1451.782s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 19000 done. Current time:190
+
+[34m(1459.579s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 19100 done. Current time:191
+
+[34m(1467.289s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 19200 done. Current time:192
+
+[34m(1474.931s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 19300 done. Current time:193
+
+[34m(1482.634s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 19400 done. Current time:194
+
+[34m(1490.325s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 19500 done. Current time:195
+
+[34m(1497.978s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 19600 done. Current time:196
+
+[34m(1505.629s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 19700 done. Current time:197
+
+[34m(1513.443s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 19800 done. Current time:198
+
+[34m(1521.131s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 19900 done. Current time:199
+
+[34m(1528.883s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 20000 done. Current time:200
+
+[34m(1536.518s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 20100 done. Current time:201
+
+[34m(1544.154s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 20200 done. Current time:202
+
+[34m(1551.882s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 20300 done. Current time:203
+
+[34m(1559.473s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 20400 done. Current time:204
+
+[34m(1567.067s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 20500 done. Current time:205
+
+[34m(1574.924s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 20600 done. Current time:206
+
+[34m(1582.588s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 20700 done. Current time:207
+
+[34m(1590.206s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 20800 done. Current time:208
+
+[34m(1597.847s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 20900 done. Current time:209
+
+[34m(1605.617s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 21000 done. Current time:210
+
+[34m(1613.284s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 21100 done. Current time:211
+
+[34m(1620.922s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 21200 done. Current time:212
+
+[34m(1628.569s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 21300 done. Current time:213
+
+[34m(1636.409s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 21400 done. Current time:214
+
+[34m(1644.077s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 21500 done. Current time:215
+
+[34m(1651.780s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 21600 done. Current time:216
+
+[34m(1659.386s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 21700 done. Current time:217
+
+[34m(1667.070s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 21800 done. Current time:218
+
+[34m(1674.722s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 21900 done. Current time:219
+
+[34m(1682.476s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 22000 done. Current time:220
+
+[34m(1690.097s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 22100 done. Current time:221
+
+[34m(1697.916s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 22200 done. Current time:222
+
+[34m(1705.575s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 22300 done. Current time:223
+
+[34m(1713.256s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 22400 done. Current time:224
+
+[34m(1720.840s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 22500 done. Current time:225
+
+[34m(1728.442s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 22600 done. Current time:226
+
+[34m(1736.057s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 22700 done. Current time:227
+
+[34m(1743.778s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 22800 done. Current time:228
+
+[34m(1751.388s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 22900 done. Current time:229
+
+[34m(1759.362s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 23000 done. Current time:230
+
+[34m(1767.012s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 23100 done. Current time:231
+
+[34m(1774.749s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 23200 done. Current time:232
+
+[34m(1782.411s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 23300 done. Current time:233
+
+[34m(1790.103s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 23400 done. Current time:234
+
+[34m(1797.728s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 23500 done. Current time:235
+
+[34m(1805.384s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 23600 done. Current time:236
+
+[34m(1812.996s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 23700 done. Current time:237
+
+[34m(1820.841s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 23800 done. Current time:238
+
+[34m(1828.565s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 23900 done. Current time:239
+
+[34m(1836.319s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 24000 done. Current time:240
+
+[34m(1843.958s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 24100 done. Current time:241
+
+[34m(1851.646s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 24200 done. Current time:242
+
+[34m(1859.320s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 24300 done. Current time:243
+
+[34m(1866.953s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 24400 done. Current time:244
+
+[34m(1874.810s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 24500 done. Current time:245
+
+[34m(1882.477s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 24600 done. Current time:246
+
+[34m(1890.079s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 24700 done. Current time:247
+
+[34m(1897.718s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 24800 done. Current time:248
+
+[34m(1905.371s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 24900 done. Current time:249
+
+[34m(1913.111s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 25000 done. Current time:250
+
+[34m(1920.705s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 25100 done. Current time:251
+
+[34m(1928.396s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 25200 done. Current time:252
+
+[34m(1936.247s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 25300 done. Current time:253
+
+[34m(1943.860s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 25400 done. Current time:254
+
+[34m(1951.470s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 25500 done. Current time:255
+
+[34m(1959.081s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 25600 done. Current time:256
+
+[34m(1966.740s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 25700 done. Current time:257
+
+[34m(1974.458s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 25800 done. Current time:258
+
+[34m(1982.145s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 25900 done. Current time:259
+
+[34m(1989.858s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 26000 done. Current time:260
+
+[34m(1997.698s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 26100 done. Current time:261
+
+[34m(2005.289s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 26200 done. Current time:262
+
+[34m(2012.901s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 26300 done. Current time:263
+
+[34m(2020.614s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 26400 done. Current time:264
+
+[34m(2028.220s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 26500 done. Current time:265
+
+[34m(2035.890s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 26600 done. Current time:266
+
+[34m(2043.487s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 26700 done. Current time:267
+
+[34m(2051.106s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 26800 done. Current time:268
+
+[34m(2059.062s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 26900 done. Current time:269
+
+[34m(2066.877s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 27000 done. Current time:270
+
+[34m(2074.568s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 27100 done. Current time:271
+
+[34m(2082.206s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 27200 done. Current time:272
+
+[34m(2089.818s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 27300 done. Current time:273
+
+[34m(2097.456s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 27400 done. Current time:274
+
+[34m(2105.084s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 27500 done. Current time:275
+
+[34m(2112.744s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 27600 done. Current time:276
+
+[34m(2120.629s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 27700 done. Current time:277
+
+[34m(2128.276s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 27800 done. Current time:278
+
+[34m(2135.951s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 27900 done. Current time:279
+
+[34m(2143.694s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 28000 done. Current time:280
+
+[34m(2151.306s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 28100 done. Current time:281
+
+[34m(2158.974s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 28200 done. Current time:282
+
+[34m(2166.565s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 28300 done. Current time:283
+
+[34m(2174.169s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 28400 done. Current time:284
+
+[34m(2182.045s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 28500 done. Current time:285
+
+[34m(2189.624s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 28600 done. Current time:286
+
+[34m(2197.256s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 28700 done. Current time:287
+
+[34m(2204.858s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 28800 done. Current time:288
+
+[34m(2212.557s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 28900 done. Current time:289
+
+[34m(2220.291s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 29000 done. Current time:290
+
+[34m(2227.976s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 29100 done. Current time:291
+
+[34m(2235.858s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 29200 done. Current time:292
+
+[34m(2243.550s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 29300 done. Current time:293
+
+[34m(2251.205s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 29400 done. Current time:294
+
+[34m(2258.850s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 29500 done. Current time:295
+
+[34m(2266.508s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 29600 done. Current time:296
+
+[34m(2274.212s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 29700 done. Current time:297
+
+[34m(2281.826s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 29800 done. Current time:298
+
+[34m(2289.461s) MPI Rank 0 - measurer.h:175 -->
+[0mStep 29900 done. Current time:299
+

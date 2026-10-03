@@ -1,0 +1,22 @@
+01:33:26 start E_k4_a1
+02:03:06 done  E_k4_a1 (1780 s)
+02:03:06 start E_k4_a1_kappa0p99999
+--- restart 02:03:53: k=4 dt 0.01 -> 0.005
+02:03:53 start E_k4_a1
+03:02:47 done  E_k4_a1 (3534 s)
+03:02:47 start E_k4_a1_kappa0p99999
+04:01:33 done  E_k4_a1_kappa0p99999 (3526 s)
+04:01:33 start T_k4_a1_kappa0p99999
+05:14:57 done  T_k4_a1_kappa0p99999 (4404 s)
+05:14:57 start E_k6_a1
+05:51:58 done  E_k6_a1 (2221 s)
+05:51:58 start E_k6_a5
+--- paused 06:11:23: k=6 settings miss the resonance band, rescanning
+--- restart 06:33:29: k=6,10 dropped; deformed k=2 only
+skip E_k4_a1 (done)
+skip E_k4_a1_kappa0p99999 (done)
+skip T_k4_a1_kappa0p99999 (done)
+06:33:29 start E_k2_a1_kappa0p9999
+07:04:47 done  E_k2_a1_kappa0p9999 (1878 s)
+07:04:47 start T_k2_a1_kappa0p9999
+07:43:05 done  T_k2_a1_kappa0p9999 (2298 s)
