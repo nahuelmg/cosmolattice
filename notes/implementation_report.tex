@@ -25,7 +25,7 @@
 \maketitle
 
 \begin{abstract}
-This report documents the \textsc{CosmoLattice} implementation of every inflationary model found viable in arXiv:2510.18656: the generalized and deformed $\alpha$-attractor E-models and T-models. It lists the new files, explains how the model headers and the initial-condition helper were built, and justifies every parameter choice in the benchmark parameter files. All families are covered by two model headers, \file{attractorE.h} and \file{attractorT.h}, plus 14 parameter files. The physics background (data constraints, derivative formulas, analytic approximations) is in the companion note \file{notes/inflation\_models.tex}.
+This report documents the \textsc{CosmoLattice} implementation of every inflationary model found viable in arXiv:2510.18656: the generalized and deformed $\alpha$-attractor E-models and T-models. It lists the new files, explains how the model headers and the initial-condition helper were built, and justifies every parameter choice in the benchmark parameter files. All families are covered by two model headers, \file{attractorE.h} and \file{attractorT.h}, plus 14 parameter files. It also derives the expressions used to redshift the lattice GW spectra and wavenumbers to today's frequency and $h^2\Omega_{\rm GW}$ (Sec.~\ref{sec:redshift}). The physics background (data constraints, derivative formulas, analytic approximations) is in the companion note \file{notes/inflation\_models.tex}.
 \end{abstract}
 
 \tableofcontents
@@ -59,6 +59,8 @@ File & Content \\
 \file{notes/attractor\_ics.py} & Background solver: $\lambda$, $\varphi_i$, $\dot\varphi_i$ from $(\aatt,k,\kappa,N_*)$. \\
 \file{notes/inflation\_models.tex} (+\,PDF) & Physics note: which models, why, potentials, derivatives, benchmark table. \\
 \file{notes/implementation\_report.tex} (+\,PDF) & This report. \\
+\file{runs/E\_starobinsky\_gw/}, \file{runs/T\_k2\_a1\_gw/} & Preheating runs with GWs (\file{run.in} + output). \\
+\file{runs/attractor\_runs.ipynb}, \file{runs/make\_notebook.py} & Analysis notebook and its generator; Sec.~5 redshifts the GW spectra to today (Sec.~\ref{sec:redshift}). \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -289,6 +291,137 @@ Parameter file & NaN & Friedmann rel.\ error at $\tilde t=19.5$ & Behaviour \\
 The initial program momentum of the Starobinsky run, $\tilde\pi=-0.342$, agrees with the hand conversion $\dot\varphi_i/(f_*\omega_*)$.
 \end{enumerate}
 \textbf{Not yet done}: comparison of \file{attractorT} ($k=2$, $\kappa=1$) with the existing \file{tanh2} model (mapping $M=\sqrt{6\aatt}\,\MP$, $\Lambda^4=\tfrac32\lambda\MP^4$); resolution studies; long runs.
+
+%======================================================================
+\section{Redshifting the GW spectrum to today}
+\label{sec:redshift}
+%======================================================================
+The lattice gives the GW spectrum at the end of the run, $t_{\rm f}$, as a function of the comoving wavenumber in program units:
+\begin{equation}
+\Omega_{\rm GW}^{(\rm f)}(k)\equiv\frac{1}{\rho_{\rm f}}\left(\frac{d\rho_{\rm GW}}{d\ln k}\right)_{\rm f},
+\end{equation}
+where $\rho_{\rm f}$ is the total energy density at $t_{\rm f}$ (file \file{spectra\_energy\_gws.txt}, columns $\tilde k$, $\Omega_{\rm GW}$, multiplicity). To compare it with detectors we need the frequency today, $f$, of each mode $k$, and the spectrum today, $h^2\Omega_{\rm GW}(f)$. This is done in Sec.~5 of \file{runs/attractor\_runs.ipynb} (code in \file{runs/make\_notebook.py}, function \texttt{gw\_today}). We follow Figueroa \& Torrenti, arXiv:1707.04533, Sec.~2.1, Eqs.~(2.16)--(2.18); the derivation is repeated here so that the conventions and the treatment of a time-dependent $w$ are explicit.
+
+\subsection{Times, notation and assumptions}
+\begin{itemize}
+\item $t_{\rm i}$: start of the simulation (end of inflation). \textsc{CosmoLattice} sets $a_{\rm i}=1$, so the comoving $k$ equals the physical wavenumber at $t_{\rm i}$.
+\item $t_{\rm f}$: end of GW production, taken as the time of the spectrum being redshifted (the last output, $\tilde t_{\rm f}=290$, unless stated otherwise).
+\item $t_{\rm RD}$: onset of radiation domination (RD). From then on the universe is a thermal plasma with entropy conserved.
+\item $t_o$: today. $g_t$ and $g_{s,t}$ are the relativistic and entropic degrees of freedom at time $t$.
+\item Between $t_{\rm i}$ and $t_{\rm RD}$ the equation of state $w=p/\rho$ is arbitrary (and time dependent); $\rho\propto a^{-3(1+w)}$ for constant $w$, and in general
+\begin{equation}
+\frac{d\ln\rho}{d\ln a}=-3(1+w).\label{eq:rhoscaling}
+\end{equation}
+\item After production, GWs are free waves well inside the horizon: their comoving $k$ is fixed, and their energy redshifts as radiation, $d\rho_{\rm GW}/d\ln k\propto a^{-4}$ for each $k$.
+\end{itemize}
+
+\subsection{Frequency today}
+A comoving mode $k$ has physical wavenumber $k/a$. Its frequency today is
+\begin{equation}
+f=\frac{1}{2\pi}\frac{k}{a_o}=\frac{a_{\rm i}}{a_o}\,\frac{k}{2\pi},
+\qquad
+\frac{a_{\rm i}}{a_o}=\frac{a_{\rm i}}{a_{\rm RD}}\,\frac{a_{\rm RD}}{a_o}. \label{eq:fsplit}
+\end{equation}
+
+\paragraph{From $t_{\rm RD}$ to today.} Entropy conservation, $g_{s}T^3a^3=\text{const}$, gives $a_{\rm RD}/a_o=(g_{s,o}/g_{s,\rm RD})^{1/3}\,T_o/T_{\rm RD}$. With $\rho=\frac{\pi^2}{30}gT^4$ for radiation, $T_o/T_{\rm RD}=(g_{\rm RD}/g_o)^{1/4}(\rho_o/\rho_{\rm RD})^{1/4}$, where $\rho_o$ is the radiation energy density today. Hence
+\begin{equation}
+\frac{a_{\rm RD}}{a_o}=\left(\frac{g_{s,o}}{g_{s,\rm RD}}\right)^{1/3}\left(\frac{g_o}{g_{\rm RD}}\right)^{-1/4}\left(\frac{\rho_o}{\rho_{\rm RD}}\right)^{1/4}. \label{eq:aRDao}
+\end{equation}
+
+\paragraph{From $t_{\rm i}$ to $t_{\rm RD}$.} For constant $w$, $\rho_{\rm RD}=\rho_{\rm i}(a_{\rm i}/a_{\rm RD})^{3(1+w)}$, so $\rho_{\rm RD}^{-1/4}=\rho_{\rm i}^{-1/4}(a_{\rm i}/a_{\rm RD})^{-3(1+w)/4}$. Inserting this and Eq.~\eqref{eq:aRDao} in Eq.~\eqref{eq:fsplit}, the powers of $a_{\rm i}/a_{\rm RD}$ combine as $1-\tfrac34(1+w)=\tfrac14(1-3w)$:
+\begin{equation}
+\frac{a_{\rm i}}{a_o}=\epsilon_{\rm i}^{1/4}\left(\frac{g_{s,o}}{g_{s,\rm RD}}\right)^{1/3}\left(\frac{g_o}{g_{\rm RD}}\right)^{-1/4}\left(\frac{\rho_o}{\rho_{\rm i}}\right)^{1/4},
+\qquad
+\epsilon_{\rm i}\equiv\left(\frac{a_{\rm i}}{a_{\rm RD}}\right)^{1-3w}. \label{eq:aiao}
+\end{equation}
+This is the paper's Eq.~(2.16). $\epsilon_{\rm i}<1$ for $w<1/3$ (shift to the IR), $=1$ for $w=1/3$, $>1$ for a stiff $w>1/3$.
+
+\paragraph{Time-dependent $w$.} Integrating Eq.~\eqref{eq:rhoscaling}, $\rho_{\rm RD}/\rho_{\rm i}=\exp[-3\int_{a_{\rm i}}^{a_{\rm RD}}(1+w)\,d\ln a]$. Then
+\begin{equation}
+\frac{a_{\rm i}}{a_{\rm RD}}\left(\frac{\rho_{\rm i}}{\rho_{\rm RD}}\right)^{-1/4}
+=\exp\Big[-\!\int d\ln a+\tfrac34\!\int(1+w)\,d\ln a\Big]
+=\exp\Big[-\tfrac14\!\int_{a_{\rm i}}^{a_{\rm RD}}(1-3w)\,d\ln a\Big],
+\end{equation}
+so Eq.~\eqref{eq:aiao} holds with
+\begin{equation}
+\epsilon_{\rm i}=\exp\Big[-\int_{a_{\rm i}}^{a_{\rm RD}}(1-3w)\,d\ln a\Big]. \label{eq:epsi}
+\end{equation}
+For constant $w$ this reduces to $(a_{\rm i}/a_{\rm RD})^{1-3w}$.
+
+\paragraph{Result.} The frequency today is (paper's Eq.~(2.17), first line)
+\begin{equation}
+\boxed{\;f=\epsilon_{\rm i}^{1/4}\left(\frac{g_{s,o}}{g_{s,\rm RD}}\right)^{1/3}\left(\frac{g_o}{g_{\rm RD}}\right)^{-1/4}\left(\frac{\rho_o}{\rho_{\rm i}}\right)^{1/4}\frac{k}{2\pi}\;} \label{eq:ftoday}
+\end{equation}
+With the constants of Sec.~\ref{sec:redshift-impl} the numerical prefactor is
+\begin{equation}
+f\simeq4.6\times10^{10}\,\epsilon_{\rm i}^{1/4}\,\frac{k}{\rho_{\rm i}^{1/4}}\ \text{Hz}, \label{eq:fnum}
+\end{equation}
+which reproduces the standard $f\simeq4\times10^{10}\,(k/\rho_{\rm i}^{1/4})$\,Hz of Dufaux et al.\ (2007) for $\epsilon_{\rm i}=1$.
+
+\paragraph{A $2\pi$ in the paper.} The second line of the paper's Eq.~(2.17), $f\simeq\epsilon_{\rm i}^{1/4}(k/\rho_{\rm i}^{1/4})\times8\cdot10^9$\,Hz, does not follow from its first line. With the paper's $\rho_o\simeq2\cdot10^{-15}$\,eV$^4$ and the $g$ factors set to 1, the first line gives $\rho_o^{1/4}/(2\pi)=5.1\times10^{10}$\,Hz, which is $2\pi$ times $8\cdot10^9$\,Hz. We use the first line, Eq.~\eqref{eq:ftoday}.
+
+\subsection{Amplitude today}
+After $t_{\rm f}$, $d\rho_{\rm GW}/d\ln k\propto a^{-4}$ at fixed $k$, so
+\begin{equation}
+\Omega_{\rm GW}(k,t_o)=\frac{1}{\rho_c}\left(\frac{d\rho_{\rm GW}}{d\ln k}\right)_{\!o}
+=\frac{1}{\rho_c}\left(\frac{a_{\rm f}}{a_o}\right)^{4}\rho_{\rm f}\,\Omega_{\rm GW}^{(\rm f)}(k),
+\end{equation}
+with $\rho_c$ the critical density today. Write $\rho_{\rm f}a_{\rm f}^4$ in terms of the radiation density today, $\rho_o=\rho_c\,\Omega_{\rm rad}$:
+\begin{equation}
+\frac{\rho_{\rm f}a_{\rm f}^4}{\rho_o a_o^4}
+=\underbrace{\frac{\rho_{\rm f}a_{\rm f}^4}{\rho_{\rm RD}a_{\rm RD}^4}}_{(a_{\rm f}/a_{\rm RD})^{1-3w}}\;
+\underbrace{\frac{\rho_{\rm RD}a_{\rm RD}^4}{\rho_o a_o^4}}_{(g_{\rm RD}/g_o)(g_{s,o}/g_{s,\rm RD})^{4/3}} .
+\end{equation}
+The first factor follows from $\rho_{\rm RD}=\rho_{\rm f}(a_{\rm f}/a_{\rm RD})^{3(1+w)}$, so that $a^4$ against $a^{3(1+w)}$ leaves the power $1-3w$; for time-dependent $w$ it is
+\begin{equation}
+\epsilon_{\rm f}\equiv\left(\frac{a_{\rm f}}{a_{\rm RD}}\right)^{1-3w}\to\exp\Big[-\int_{a_{\rm f}}^{a_{\rm RD}}(1-3w)\,d\ln a\Big]. \label{eq:epsf}
+\end{equation}
+The second factor uses $\rho a^4\propto gT^4a^4\propto g\,g_s^{-4/3}$ during the thermal phase. Multiplying by $h^2$ (paper's Eq.~(2.18), first line):
+\begin{equation}
+\boxed{\;h^2\Omega_{\rm GW}(f)=h^2\Omega_{\rm rad}\;\epsilon_{\rm f}\left(\frac{g_{s,o}}{g_{s,\rm RD}}\right)^{4/3}\left(\frac{g_{\rm RD}}{g_o}\right)\Omega_{\rm GW}^{(\rm f)}(k)\;}
+\simeq1.6\times10^{-5}\,\epsilon_{\rm f}\,\Omega_{\rm GW}^{(\rm f)}(k). \label{eq:Otoday}
+\end{equation}
+$\epsilon_{\rm f}<1$ (suppression) if there is a phase with $w<1/3$ between the end of production and RD. Since $\Omega_{\rm GW}$ is defined per logarithmic interval and $f\propto k$ at fixed time, $d\ln f=d\ln k$: the spectrum is mapped point by point, $h^2\Omega_{\rm GW}(f(k))$, with no Jacobian.
+
+Note the difference between the two factors: $\epsilon_{\rm i}$ (frequency) involves the whole history from $t_{\rm i}$, because $k$ is defined at $t_{\rm i}$; $\epsilon_{\rm f}$ (amplitude) only the history after $t_{\rm f}$, because $\Omega_{\rm GW}^{(\rm f)}$ is normalized at $t_{\rm f}$. They are related by $\epsilon_{\rm f}=\epsilon_{\rm i}\exp[\int_{a_{\rm i}}^{a_{\rm f}}(1-3w)\,d\ln a]$.
+
+\subsection{Implementation}
+\label{sec:redshift-impl}
+\paragraph{Lattice quantities in physical units.} With $f_*=\MP$ and $a_{\rm i}=1$:
+\begin{equation}
+k\,[\text{GeV}]=\tilde k\,\omega_*,\qquad
+\rho_{\rm i}=\tilde E_{\rm tot}(\tilde t=0)\,\MP^2\omega_*^2,\qquad
+\omega_*=\sqrt{\lambda_k}\,\MP\,x_i^{(k-2)/2},
+\end{equation}
+where $\tilde E_{\rm tot}$ is read from \file{average\_energies.txt} and $\omega_*$ is recomputed from \file{run.in} exactly as in the model headers (Sec.~\ref{sec:headers}). Conversion to Hz: in natural units Eq.~\eqref{eq:ftoday} gives $f$ in GeV, and $f\,[\text{Hz}]=f\,[\text{GeV}]/\hbar$ with $1\,\text{GeV}/\hbar=1.519267\times10^{24}$\,s$^{-1}$.
+
+\paragraph{The expansion factors.} The integral $\int(1-3w)\,d\ln a$ is split at $t_{\rm f}$:
+\begin{equation}
+\epsilon_{\rm i}=\exp\big[-(I_{\rm f}+I_{\rm post})\big],\qquad \epsilon_{\rm f}=\exp\big[-I_{\rm post}\big],
+\end{equation}
+\begin{itemize}
+\item $I_{\rm f}=\int_{a_{\rm i}}^{a_{\rm f}}(1-3w)\,d\ln a$ is computed \emph{from the lattice}. The equation of state is $w=p/\rho$ with the volume-averaged energies of the two scalars, $\rho=K+G+V$ and $p=K-G/3-V$ ($K$ kinetic, $G$ gradient, $V$ potential; GWs are negligible). $\ln a$ is interpolated from \file{average\_scale\_factor.txt} to the times of \file{average\_energies.txt}, and the integral is done with the trapezoidal rule. Integrating the instantaneous $w$ automatically averages over the inflaton oscillations.
+\item $I_{\rm post}=(1-3w_{\rm post})N_{\rm post}$ describes the unknown history between the end of the run and the onset of RD: $N_{\rm post}=\ln(a_{\rm RD}/a_{\rm f})$ $e$-folds at constant $w_{\rm post}$ (notebook variables \texttt{N\_POST}, \texttt{W\_POST}). The default $N_{\rm post}=0$ (instant RD at $t_{\rm f}$) gives $\epsilon_{\rm f}=1$. Since $w\simeq0.24<1/3$ at the end of the runs, this is an upper bound on both $f$ and $h^2\Omega_{\rm GW}$.
+\end{itemize}
+
+\paragraph{Constants.} $T_0=2.7255$\,K, $g_o=3.36$, $g_{s,o}=3.91$, so $\rho_o=\frac{\pi^2}{30}g_oT_0^4=3.36\times10^{-15}$\,eV$^4$; $h^2\Omega_{\rm rad}=4.15\times10^{-5}$, which is consistent with this $\rho_o$ ($\rho_c/h^2=8.10\times10^{-47}$\,GeV$^4$); $g_{\rm RD}=g_{s,\rm RD}=106.75$ (full SM). The $g$ factors are $(g_{s,o}/g_{s,\rm RD})^{1/3}(g_o/g_{\rm RD})^{-1/4}=0.79$ in Eq.~\eqref{eq:ftoday} and $(g_{s,o}/g_{s,\rm RD})^{4/3}(g_{\rm RD}/g_o)=0.39$ in Eq.~\eqref{eq:Otoday}. $\MP=2.435\times10^{18}$\,GeV.
+
+\paragraph{Spectra at intermediate times.} \texttt{gw\_today(name, idx)} can redshift the spectrum of any output time, treating that time as $t_{\rm f}$. Then $I_{\rm f}$, and so the $k\to f$ map, changes with $t_{\rm f}$. The same map $f/\tilde k$ is used to plot the field spectra against the frequency today.
+
+\subsection{Results for the two runs}
+Runs \file{runs/E\_starobinsky\_gw} and \file{runs/T\_k2\_a1\_gw} ($N=64$, $k_{\rm IR}=0.5$, $q_0\approx10^4$), redshifted from $\tilde t_{\rm f}=290$ with $N_{\rm post}=0$:
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}l c c c c c c c@{}}
+\toprule
+Run & $\omega_*$ [GeV] & $\rho_{\rm i}^{1/4}$ [GeV] & $a_{\rm f}$ & $\epsilon_{\rm i}$ & $f/\tilde k$ [Hz] & $f_p$ [Hz] & $h^2\Omega_{\rm GW}(f_p)$ \\
+\midrule
+E, Starobinsky, $g=4.5\times10^{-3}$ & $3.35\times10^{13}$ & $5.84\times10^{15}$ & 18.9 & 0.126 & $1.57\times10^{8}$ & $2.6\times10^{9}$ & $1.6\times10^{-9}$ \\
+T, $k=2$, $g=1.7\times10^{-3}$ & $1.76\times10^{13}$ & $5.47\times10^{15}$ & 26.1 & 0.094 & $8.16\times10^{7}$ & $1.35\times10^{9}$ & $2.1\times10^{-9}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+$\epsilon_{\rm i}\approx0.1$ corresponds to an average $\langle w\rangle\approx0.1$ over the $\sim3$ $e$-folds of the run, i.e.\ a frequency shift by $\epsilon_{\rm i}^{1/4}\approx0.6$ relative to instant RD at $t_{\rm i}$. A matter phase of $N_{\rm post}=2$ $e$-folds after the run lowers $f$ by $e^{-1/2}\approx0.61$ and $h^2\Omega_{\rm GW}$ by $e^{-2}\approx0.14$ (dashed curves in the notebook). These numbers are not converged: the GW peak ($\tilde k\simeq17$) is close to the lattice cutoff $\tilde k_{\max}\simeq28$, so the runs must be repeated at $N=128$--$256$ before quoting them.
 
 %======================================================================
 \section{How to build and run}
