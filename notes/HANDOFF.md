@@ -2,6 +2,10 @@
 
 Read this first. It is the state at the end of the session of 2026-10-02.
 
+**This repo is used on several computers.** All paths below are relative to the repository root
+(the directory containing `CMakeLists.txt`); never assume a fixed home directory, user name or conda location.
+Check `git remote -v` and the available tools on each machine before using them.
+
 ## Goal of the work
 Implement in CosmoLattice the inflaton potentials that remain viable after the latest CMB data, following
 **arXiv:2510.18656** (Ellis, Garcia, Olive, Verner: attractor models vs Planck/BK18/ACT DR6/SPT-3G).
@@ -9,11 +13,11 @@ Then simulate preheating with GWs and redshift the GW spectra to today, followin
 (Figueroa & Torrenti). Both papers' LaTeX sources are in `papers/`.
 
 ## Repository state
-- Repo: `/home/nahue-ofi/cosmolattice`, CosmoLattice **2.0** (upstream commit `acc8278d`). In 2.0, models live in `models/`, not `src/models/`.
-- Work branch: **`attractor-models`**, pushed to the user's fork. Remote `fork` = `git@github.com:nahuelmg/cosmolattice.git`, over SSH, which works. HTTPS has no saved credentials.
-- `origin` = official `cosmolattice/cosmolattice`. **Never push there.** Local `master` = upstream master, untouched.
-- `git stash@{0}` ("local changes before pulling v2.0"): the user's old edits to the v1 files `src/models/parameter-files/lphi4.in` (deleted) and `lphi4U1.in`.
-- **Missing files:** the user's untracked v1 files `src/models/lphi4_only.h`, `src/models/m2phi2.h` and `src/models/parameter-files/lphi4_{1..5,4bis,only}.in`, `m2phi2.in` disappeared from disk mid-session (around 18:41). The cause is unknown; they are not in git or the Trash. The user was told. If they recover them, they may want them ported to v2.0.
+- Repo: CosmoLattice **2.0** (upstream commit `acc8278d`), cloned at a different place on each computer. In 2.0, models live in `models/`, not `src/models/`.
+- Work branch: **`attractor-models`**, pushed to the user's fork `git@github.com:nahuelmg/cosmolattice.git` (SSH works; HTTPS has no saved credentials).
+- **Remote names differ between computers.** On one machine the fork is `fork` and `origin` is the official `cosmolattice/cosmolattice`; on another, `origin` is the fork itself. Run `git remote -v` and push only to the remote whose URL is `nahuelmg/cosmolattice`. **Never push to `cosmolattice/cosmolattice`.** Local `master` = upstream master, untouched.
+- Machine-local state (not in git, may not exist on the current computer): `git stash@{0}` ("local changes before pulling v2.0") with the user's old edits to the v1 files `src/models/parameter-files/lphi4.in` (deleted) and `lphi4U1.in`; the `build_attractor{E,T}/` directories.
+- **Missing files:** on the first computer, the user's untracked v1 files `src/models/lphi4_only.h`, `src/models/m2phi2.h` and `src/models/parameter-files/lphi4_{1..5,4bis,only}.in`, `m2phi2.in` disappeared from disk mid-session (around 18:41). The cause is unknown; they are not in git or the Trash. The user was told. If they recover them, they may want them ported to v2.0.
 - `gh` CLI is not installed: no PR creation from here. PR link: https://github.com/nahuelmg/cosmolattice/pull/new/attractor-models
 
 ## What exists (all on branch `attractor-models`)
@@ -24,7 +28,7 @@ Then simulate preheating with GWs and redshift the GW spectra to today, followin
 | `models/parameter-files/attractor{E,T}_*.in` | 14 benchmark points of the paper (λ and initial conditions from the helper) |
 | `notes/attractor_ics.py` | Background solver: `python attractor_ics.py E --alpha 1 --k 2 --kappa 1 --nstar 50`, which prints λ (from A_s) and `initial_amplitudes`/`initial_momenta` at ε_H=1 |
 | `notes/inflation_models.tex/.pdf` | Physics note: data, viable models, V, V′, V″, benchmarks table |
-| `notes/implementation_report.tex/.pdf` | How it was built, files, parameter choices, validation |
+| `notes/implementation_report.tex/.pdf` | How it was built, files, parameter choices, validation, and the derivation of the GW redshift to today (f, h²Ω_GW) |
 | `runs/E_starobinsky_gw/`, `runs/T_k2_a1_gw/` | Preheating runs with GWs (`run.in` + full output) |
 | `runs/attractor_runs.ipynb` | Executed notebook: energies, w, field/GW spectra, and Sec. 5 with today's f and h²Ω_GW |
 | `runs/make_notebook.py` | Generates the notebook. **Edit this, not the .ipynb**, then rebuild (see below) |
@@ -36,15 +40,22 @@ Then simulate preheating with GWs and redshift the GW spectra to today, followin
 - `initial_amplitudes` are in GeV, `initial_momenta` in GeV².
 
 ## How to build / run / rebuild the notebook
+Tools: needs cmake, a C++ compiler, FFTW3, and Python 3 with numpy/scipy/matplotlib/nbformat/jupyter.
+Where they come from depends on the computer: on the first one, a conda env `cosmolattice` (activate it, or prepend
+its `bin/` to `PATH`); on another, system `python3` (with numpy) and `pdflatex` are available but conda is not.
+Check with `which cmake python3 pdflatex` first.
+
+All commands start from the repository root:
 ```bash
-export PATH=~/miniconda3/envs/cosmolattice/bin:$PATH     # cmake 4.2.3, FFTW, numpy/scipy/jupyter. System has no cmake/numpy.
-cd ~/cosmolattice/build_attractorE   # already configured; or: mkdir build_X && cd build_X && cmake .. -DMODEL=attractorE && make -j8
-make -j8
-cd ~/cosmolattice/runs/E_starobinsky_gw
+mkdir -p build_attractorE && cd build_attractorE && cmake .. -DMODEL=attractorE && make -j8 && cd ..
+cd runs/E_starobinsky_gw
 OMP_NUM_THREADS=8 OMP_PROC_BIND=false ../../build_attractorE/attractorE input=run.in overwriteFiles=true
-cd ~/cosmolattice/runs && python make_notebook.py && jupyter nbconvert --to notebook --execute --inplace attractor_runs.ipynb
+cd ..   # now in runs/
+python3 make_notebook.py && jupyter nbconvert --to notebook --execute --inplace attractor_runs.ipynb
+cd ../notes && pdflatex implementation_report.tex && pdflatex implementation_report.tex   # rebuild a note (run twice for refs/TOC)
 ```
-- **Performance:** 16 logical / 8 physical cores. **8 threads is fastest**; 16 is slower. **Never run two simulations at once**: they fight for cores and slow down by about 10×. N=64 with GWs takes ≈1.7 s per program-time unit, so ≈8.5 min to t=300.
+`make_notebook.py` writes the notebook next to itself, and the notebook reads the run folders relative to `runs/`, so both work from any clone location.
+- **Performance** (first computer: 16 logical / 8 physical cores): **threads = physical cores is fastest**; using all logical cores is slower. **Never run two simulations at once**: they fight for cores and slow down by about 10×. N=64 with GWs takes ≈1.7 s per program-time unit, so ≈8.5 min to t=300.
 - CosmoLattice refuses to overwrite output unless `overwriteFiles=true`.
 - Any `.in` key can be overridden on the command line (`N=128 tMax=500`).
 - Output: `average_energies.txt`, `average_energies_gws.txt` (rhoGW_over_rho, rhoGW), `average_scale_factor.txt`, and `spectra_scalar_{0,1}.txt` / `spectra_energy_gws.txt`. Spectra are blocks separated by blank lines with columns k, Δ_field, Δ_momentum, multiplicity; the GW spectrum columns are k, Ω_GW, multiplicity. Spectrum times are in `average_spectra_times.txt`.

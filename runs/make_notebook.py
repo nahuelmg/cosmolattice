@@ -350,5 +350,6 @@ cells.append(md(r"""## Notes and caveats
 
 nb["cells"] = cells
 nb["metadata"]["kernelspec"] = {"name": "python3", "display_name": "Python 3", "language": "python"}
-nbf.write(nb, "/home/nahue-ofi/cosmolattice/runs/attractor_runs.ipynb")
+import os
+nbf.write(nb, os.path.join(os.path.dirname(os.path.abspath(__file__)), "attractor_runs.ipynb"))
 print("written")

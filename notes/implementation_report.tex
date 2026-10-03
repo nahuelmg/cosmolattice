@@ -158,11 +158,11 @@ with $D'=\tfrac12(1-\kappa)b\sinh bx$, $D''=\tfrac12(1-\kappa)b^2\cosh bx$, $T=\
 \section{The initial-condition helper}
 \label{sec:helper}
 %======================================================================
-\file{notes/attractor\_ics.py} needs \texttt{numpy} and \texttt{scipy}. These are available in the \texttt{cosmolattice} conda environment.
+\file{notes/attractor\_ics.py} needs \texttt{numpy} and \texttt{scipy}. Any Python~3 with these packages works (e.g.\ the \texttt{cosmolattice} conda environment, if present on the machine).
 
 \paragraph{Usage.}
 \begin{lstlisting}
-~/miniconda3/envs/cosmolattice/bin/python3 notes/attractor_ics.py E --alpha 1 --k 2 --kappa 1 --nstar 50
+python3 notes/attractor_ics.py E --alpha 1 --k 2 --kappa 1 --nstar 50   # from the repository root
 \end{lstlisting}
 It prints \texttt{lambda}, \texttt{alphaAtt}, \texttt{k}, \texttt{kappa}, \texttt{initial\_amplitudes} and \texttt{initial\_momenta} in the \file{.in} syntax, plus a comment line with the slow-roll $n_s$, $r$, $x_*$, $x_{\rm end}$ and $H_{\rm end}$.
 
@@ -412,6 +412,7 @@ where $\tilde E_{\rm tot}$ is read from \file{average\_energies.txt} and $\omega
 Runs \file{runs/E\_starobinsky\_gw} and \file{runs/T\_k2\_a1\_gw} ($N=64$, $k_{\rm IR}=0.5$, $q_0\approx10^4$), redshifted from $\tilde t_{\rm f}=290$ with $N_{\rm post}=0$:
 \begin{center}
 \renewcommand{\arraystretch}{1.15}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}l c c c c c c c@{}}
 \toprule
 Run & $\omega_*$ [GeV] & $\rho_{\rm i}^{1/4}$ [GeV] & $a_{\rm f}$ & $\epsilon_{\rm i}$ & $f/\tilde k$ [Hz] & $f_p$ [Hz] & $h^2\Omega_{\rm GW}(f_p)$ \\
@@ -419,7 +420,7 @@ Run & $\omega_*$ [GeV] & $\rho_{\rm i}^{1/4}$ [GeV] & $a_{\rm f}$ & $\epsilon_{\
 E, Starobinsky, $g=4.5\times10^{-3}$ & $3.35\times10^{13}$ & $5.84\times10^{15}$ & 18.9 & 0.126 & $1.57\times10^{8}$ & $2.6\times10^{9}$ & $1.6\times10^{-9}$ \\
 T, $k=2$, $g=1.7\times10^{-3}$ & $1.76\times10^{13}$ & $5.47\times10^{15}$ & 26.1 & 0.094 & $8.16\times10^{7}$ & $1.35\times10^{9}$ & $2.1\times10^{-9}$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{center}
 $\epsilon_{\rm i}\approx0.1$ corresponds to an average $\langle w\rangle\approx0.1$ over the $\sim3$ $e$-folds of the run, i.e.\ a frequency shift by $\epsilon_{\rm i}^{1/4}\approx0.6$ relative to instant RD at $t_{\rm i}$. A matter phase of $N_{\rm post}=2$ $e$-folds after the run lowers $f$ by $e^{-1/2}\approx0.61$ and $h^2\Omega_{\rm GW}$ by $e^{-2}\approx0.14$ (dashed curves in the notebook). These numbers are not converged: the GW peak ($\tilde k\simeq17$) is close to the lattice cutoff $\tilde k_{\max}\simeq28$, so the runs must be repeated at $N=128$--$256$ before quoting them.
 
@@ -427,8 +428,8 @@ $\epsilon_{\rm i}\approx0.1$ corresponds to an average $\langle w\rangle\approx0
 \section{How to build and run}
 %======================================================================
 \begin{lstlisting}
-export PATH=~/miniconda3/envs/cosmolattice/bin:$PATH   # provides cmake and FFTW
-cd ~/cosmolattice
+# from the repository root; cmake, FFTW and a C++ compiler must be on PATH
+# (e.g. activate the cosmolattice conda environment first)
 mkdir build_attractorE && cd build_attractorE
 cmake .. -DMODEL=attractorE && make -j8
 ./attractorE input=../models/parameter-files/attractorE_k2_a1_starobinsky.in
